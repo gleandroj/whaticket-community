@@ -13,6 +13,7 @@
     "date-fns": "^2.16.1",
     "emoji-mart": "^3.0.1",
     "formik": "^2.2.0",
+    "frontend": "file:",
     "i18next": "^19.8.2",
     "i18next-browser-languagedetector": "^6.0.1",
     "markdown-to-jsx": "^7.1.0",
@@ -50,6 +51,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {}
+  }
 }

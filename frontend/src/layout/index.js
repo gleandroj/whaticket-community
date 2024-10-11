@@ -21,6 +21,7 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import MainListItems from "./MainListItems";
 import NotificationsPopOver from "../components/NotificationsPopOver";
 import UserModal from "../components/UserModal";
+import CompanyModal from "../components/CompanyModal";
 import { AuthContext } from "../context/Auth/AuthContext";
 import BackdropLoading from "../components/BackdropLoading";
 import { i18n } from "../translate/i18n";
@@ -119,6 +120,9 @@ const LoggedInLayout = ({ children }) => {
   const [drawerVariant, setDrawerVariant] = useState("permanent");
   const { user } = useContext(AuthContext);
 
+  const[companyModalOpen, setCompanyModalOpen] = useState(false);
+  const { company } = useContext(AuthContext);
+
   useEffect(() => {
     if (document.body.offsetWidth > 600) {
       setDrawerOpen(true);
@@ -191,6 +195,11 @@ const LoggedInLayout = ({ children }) => {
         open={userModalOpen}
         onClose={() => setUserModalOpen(false)}
         userId={user?.id}
+      />
+      <CompanyModal
+      open={companyModalOpen}
+      onClose={()=> setCompanyModalOpen(false)}
+      companyId={company?.id}
       />
       <AppBar
         position="absolute"

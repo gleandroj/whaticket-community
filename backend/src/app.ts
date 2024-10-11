@@ -15,6 +15,8 @@ import { logger } from "./utils/logger";
 Sentry.init({ dsn: process.env.SENTRY_DSN });
 
 const app = express();
+// Serve o arquivo HTML do frontend
+app.use(express.static("frontend"));
 
 app.use(
   cors({

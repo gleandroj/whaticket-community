@@ -351,6 +351,7 @@ const messages = {
           whatsapp: "Conexão Padrão",
           actions: "Ações",
         },
+        
         buttons: {
           add: "Adicionar usuário",
         },
@@ -462,6 +463,27 @@ const messages = {
           "Esta cor já está em uso, escolha outra.",
         ERR_WAPP_GREETING_REQUIRED:
           "A mensagem de saudação é obrigatório quando há mais de uma fila.",
+      },
+      users: {
+        title: "Usuários",
+        table: {
+          name: "Nome",
+          email: "Email",
+          profile: "Perfil",
+          whatsapp: "Conexão Padrão",
+          actions: "Ações",
+        },
+        buttons: {
+          add: "Adicionar usuário",
+        },
+        toasts: {
+          deleted: "Usuário excluído com sucesso.",
+        },
+        confirmationModal: {
+          deleteTitle: "Excluir",
+          deleteMessage:
+            "Todos os dados do usuário serão perdidos. Os tickets abertos deste usuário serão movidos para a fila.",
+        },
       },
     },
   },

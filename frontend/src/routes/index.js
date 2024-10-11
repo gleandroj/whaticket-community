@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
+import Company from "../pages/company"
 import LoggedInLayout from "../layout";
 import Dashboard from "../pages/Dashboard/";
 import Tickets from "../pages/Tickets/";
@@ -16,6 +17,7 @@ import Queues from "../pages/Queues/";
 import { AuthProvider } from "../context/Auth/AuthContext";
 import { WhatsAppsProvider } from "../context/WhatsApp/WhatsAppsContext";
 import Route from "./Route";
+import Companies from "../pages/company";
 
 const Routes = () => {
   return (
@@ -41,6 +43,8 @@ const Routes = () => {
               />
               <Route exact path="/contacts" component={Contacts} isPrivate />
               <Route exact path="/users" component={Users} isPrivate />
+              
+              <Route exact path="/companies" component={Companies}isPrivate/>
               <Route
                 exact
                 path="/quickAnswers"
