@@ -2,12 +2,12 @@ import { QueryInterface, DataTypes } from "sequelize";
 
 module.exports = {
   up: (queryInterface: QueryInterface) => {
-    return queryInterface.createTable("WhatsappQueues", {
-      whatsappId: {
+    return queryInterface.createTable("EmpresaFuncionario", {
+      userId: {
         type: DataTypes.INTEGER,
         primaryKey: true
       },
-      queueId: {
+      companyId: {
         type: DataTypes.INTEGER,
         primaryKey: true
       },
@@ -18,17 +18,11 @@ module.exports = {
       updatedAt: {
         type: DataTypes.DATE,
         allowNull: false
-      },
-      companiesId: {
-        type: DataTypes.INTEGER,
-        references: { model: "Companies", key: "id" },
-        onUpdate: "CASCADE",
-        onDelete: "SET NULL"
       }
     });
   },
 
   down: (queryInterface: QueryInterface) => {
-    return queryInterface.dropTable("WhatsappQueues");
+    return queryInterface.dropTable("EmpresaFuncionario");
   }
 };

@@ -28,6 +28,12 @@ module.exports = {
       updatedAt: {
         type: DataTypes.DATE,
         allowNull: false
+      },
+      companiesId: {
+        type: DataTypes.INTEGER,
+        references: { model: "Companies", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL"
       }
     });
   },

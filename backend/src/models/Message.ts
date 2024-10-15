@@ -12,6 +12,7 @@ import {
 } from "sequelize-typescript";
 import Contact from "./Contact";
 import Ticket from "./Ticket";
+import Company from "./Company";
 
 @Table
 class Message extends Model<Message> {
@@ -65,6 +66,10 @@ class Message extends Model<Message> {
 
   @BelongsTo(() => Message, "quotedMsgId")
   quotedMsg: Message;
+
+  @ForeignKey(() => Company)
+  @Column
+  companiesId: number;
 
   @ForeignKey(() => Ticket)
   @Column

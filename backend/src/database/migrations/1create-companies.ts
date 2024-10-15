@@ -23,10 +23,7 @@ module.exports = {
         allowNull: false,
         unique: true
       },
-      address: {
-        type: DataTypes.STRING,
-        allowNull: true
-      },
+
       createdAt: {
         type: DataTypes.DATE(6),
         allowNull: false

@@ -21,9 +21,5 @@ class Company extends Model<Company> {
 
   @Column
   cnpj: string;
-
-  @Column
-  address: string;
 }
-
 export default Company;
