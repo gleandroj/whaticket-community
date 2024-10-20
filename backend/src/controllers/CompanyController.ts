@@ -9,11 +9,14 @@ import UpdateCompanyService from "../services/CompanyServices/UpdateCompanyServi
 import DeleteCompanyService from "../services/CompanyServices/DeleteCompanyService";
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
-  const { searchParam, pageNumber } = req.query;
+  const searchParam = (req.query.searchParam as string) || "";
+  const pageNumber = req.query.pageNumber
+    ? parseInt(req.query.pageNumber as string, 10)
+    : 1;
 
   const companies = await ListCompaniesService({
-    searchParam: searchParam as string,
-    pageNumber: pageNumber as string
+    searchParam,
+    pageNumber
   });
 
   return res.status(200).json(companies);

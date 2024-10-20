@@ -1,28 +1,42 @@
 import { QueryInterface, DataTypes } from "sequelize";
 
 module.exports = {
-  up: (queryInterface: QueryInterface) => {
-    return queryInterface.createTable("EmpresaFuncionario", {
+  up: async (queryInterface: QueryInterface) => {
+    await queryInterface.createTable("EmpresaFuncionario", {
       userId: {
         type: DataTypes.INTEGER,
-        primaryKey: true
+        allowNull: false,
+        references: {
+          model: "Users",
+          key: "id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
       },
       companyId: {
         type: DataTypes.INTEGER,
-        primaryKey: true
+        allowNull: false,
+        references: {
+          model: "Companies",
+          key: "id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
       },
       createdAt: {
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: false,
+        defaultValue: DataTypes.NOW
       },
       updatedAt: {
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: false,
+        defaultValue: DataTypes.NOW
       }
     });
   },
 
-  down: (queryInterface: QueryInterface) => {
-    return queryInterface.dropTable("EmpresaFuncionario");
+  down: async (queryInterface: QueryInterface) => {
+    await queryInterface.dropTable("EmpresaFuncionario");
   }
 };

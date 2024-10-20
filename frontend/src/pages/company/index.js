@@ -246,7 +246,8 @@ const Companies = () => {
                 <TableRow key={company.id}>
                   <TableCell align="center">{company.name}</TableCell>
                   <TableCell align="center">{company.cnpj}</TableCell>
-                  <TableCell align="center">{company.address}</TableCell>
+                  <TableCell align="center">{company.email}</TableCell>
+                  
                   <TableCell align="center">
                     <IconButton
                       size="small"

@@ -3,8 +3,11 @@ import {
   Column,
   Model,
   PrimaryKey,
-  AutoIncrement
+  AutoIncrement,
+  BelongsToMany
 } from "sequelize-typescript";
+import User from "./User";
+import EmpresaFuncionario from "./EmpresaFuncionario";
 
 @Table
 class Company extends Model<Company> {
@@ -21,5 +24,9 @@ class Company extends Model<Company> {
 
   @Column
   cnpj: string;
+
+  @BelongsToMany(() => User, () => EmpresaFuncionario)
+  userId: User[]; // Relação com User
 }
+
 export default Company;

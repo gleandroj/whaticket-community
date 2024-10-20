@@ -1,10 +1,10 @@
 import {
   Table,
   Column,
-  CreatedAt,
-  UpdatedAt,
   Model,
-  ForeignKey
+  ForeignKey,
+  CreatedAt,
+  UpdatedAt
 } from "sequelize-typescript";
 import User from "./User";
 import Company from "./Company";
@@ -13,11 +13,11 @@ import Company from "./Company";
 class EmpresaFuncionario extends Model<EmpresaFuncionario> {
   @ForeignKey(() => User)
   @Column
-  userId: number;
+  userId: number; // ID do usuário
 
   @ForeignKey(() => Company)
   @Column
-  companyId: number;
+  companyId: number; // ID da empresa
 
   @CreatedAt
   createdAt: Date;
@@ -25,4 +25,5 @@ class EmpresaFuncionario extends Model<EmpresaFuncionario> {
   @UpdatedAt
   updatedAt: Date;
 }
+
 export default EmpresaFuncionario;

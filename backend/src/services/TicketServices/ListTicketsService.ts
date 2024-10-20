@@ -17,6 +17,7 @@ interface Request {
   userId: string;
   withUnreadMessages?: string;
   queueIds: number[];
+  companyId?: number; // Adicionado companyId
 }
 
 interface Response {
@@ -33,12 +34,20 @@ const ListTicketsService = async ({
   date,
   showAll,
   userId,
-  withUnreadMessages
+  withUnreadMessages,
+  companyId // Incluindo companyId como parâmetro
 }: Request): Promise<Response> => {
   let whereCondition: Filterable["where"] = {
     [Op.or]: [{ userId }, { status: "pending" }],
     queueId: { [Op.or]: [queueIds, null] }
   };
+  // Adicionando companyId ao whereCondition se fornecido
+  if (companyId) {
+    whereCondition = {
+      ...whereCondition,
+      companyId // Incluindo a condição para companyId
+    };
+  }
   let includeCondition: Includeable[];
 
   includeCondition = [

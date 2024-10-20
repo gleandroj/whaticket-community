@@ -26,8 +26,7 @@ const ListCompaniesService = async ({
         )
       },
       { email: { [Op.like]: `%${searchParam.toLowerCase()}%` } },
-      { cnpj: { [Op.like]: `%${searchParam.toLowerCase()}%` } },
-      { address: { [Op.like]: `%${searchParam.toLowerCase()}%` } }
+      { cnpj: { [Op.like]: `%${searchParam.toLowerCase()}%` } }
     ]
   };
 
@@ -36,7 +35,7 @@ const ListCompaniesService = async ({
 
   const { count, rows: companies } = await Company.findAndCountAll({
     where: whereCondition,
-    attributes: ["id", "name", "email", "cnpj", "address", "createdAt"],
+    attributes: ["id", "name", "email", "cnpj", "createdAt"],
     limit,
     offset,
     order: [["createdAt", "DESC"]]

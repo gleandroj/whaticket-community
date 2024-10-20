@@ -22,7 +22,9 @@ describe("User", () => {
     const newUser = await CreateUserService({
       name: faker.name.findName(),
       email: faker.internet.email(),
-      password: faker.internet.password()
+      password: faker.internet.password(),
+      // Adicione um valor válido
+      companyId: 2 // Adicione um valor válido
     });
 
     const user = await ShowUserService(newUser.id);

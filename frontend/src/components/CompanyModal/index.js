@@ -166,17 +166,20 @@ const CompanyModal = ({ open, onClose, companyId }) => {
 										margin="dense"
 										fullWidth
 									/>
+							
+										<Field
+										as={TextField}
+										label={i18n.t("Email")}
+										autoFocus
+										name="email"
+										error={touched.email && Boolean(errors.email)}
+										helperText={touched.email && errors.email}
+										variant="outlined"
+										margin="dense"
+										fullWidth
+									/>
 								</div>
-								<Field
-									as={TextField}
-									label={i18n.t("email")}
-									name="email"
-									error={touched.address && Boolean(errors.address)}
-									helperText={touched.address && errors.address}
-									variant="outlined"
-									margin="dense"
-									fullWidth
-								/>
+							
 							</DialogContent>
 							<DialogActions>
 								<Button

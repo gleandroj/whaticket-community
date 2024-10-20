@@ -63,7 +63,6 @@ const verifyQuotedMessage = async (
   return quotedMsg;
 };
 
-
 // generate random id string for file names, function got from: https://stackoverflow.com/a/1349426/1851801
 function makeRandomId(length: number) {
     let result = '';

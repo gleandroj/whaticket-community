@@ -70,7 +70,7 @@ const UserSchema = Yup.object().shape({
 		.max(50, "Too Long!")
 		.required("Required"),
 	password: Yup.string().min(5, "Too Short!").max(50, "Too Long!"),
-	email: Yup.string().email("Invalid email").required("Required"),
+	email: Yup.string().email("Invalid email").required("Required")
 });
 
 const UserModal = ({ open, onClose, userId }) => {
@@ -80,7 +80,8 @@ const UserModal = ({ open, onClose, userId }) => {
 		name: "",
 		email: "",
 		password: "",
-		profile: "user"
+		profile: "user",
+		companyId: ""
 	};
 
 	const { user: loggedInUser } = useContext(AuthContext);
@@ -201,6 +202,18 @@ const UserModal = ({ open, onClose, userId }) => {
 										name="email"
 										error={touched.email && Boolean(errors.email)}
 										helperText={touched.email && errors.email}
+										variant="outlined"
+										margin="dense"
+										fullWidth
+										
+									/> 
+									
+									<Field
+										as={TextField}
+										label={i18n.t("companyId")}
+										name="companyId"
+										error={touched.companyId && Boolean(errors.companyId)}
+										helperText={touched.companyId && errors.companyId}
 										variant="outlined"
 										margin="dense"
 										fullWidth

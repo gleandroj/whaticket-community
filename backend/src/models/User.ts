@@ -1,26 +1,26 @@
 import {
   Table,
   Column,
-  CreatedAt,
-  UpdatedAt,
   Model,
+  PrimaryKey,
+  AutoIncrement,
+  ForeignKey,
+  BelongsToMany,
+  HasMany,
+  BelongsTo,
   DataType,
   BeforeCreate,
   BeforeUpdate,
-  PrimaryKey,
-  AutoIncrement,
-  Default,
-  HasMany,
-  BelongsToMany,
-  ForeignKey,
-  BelongsTo
+  CreatedAt,
+  UpdatedAt
 } from "sequelize-typescript";
 import { hash, compare } from "bcryptjs";
+import Company from "./Company";
 import Ticket from "./Ticket";
 import Queue from "./Queue";
 import UserQueue from "./UserQueue";
 import Whatsapp from "./Whatsapp";
-import Company from "./Company";
+import EmpresaFuncionario from "./EmpresaFuncionario";
 
 @Table
 class User extends Model<User> {
@@ -41,20 +41,18 @@ class User extends Model<User> {
   @Column
   passwordHash: string;
 
-  @Default(0)
   @Column
-  tokenVersion: number;
+  tokenVersion: number; // Propriedade adicionada
 
-  @Default("admin")
   @Column
-  profile: string;
+  profile: string; // Propriedade adicionada
 
   @ForeignKey(() => Whatsapp)
-  @Column
-  whatsappId: number;
+  @Column({ type: DataType.INTEGER, allowNull: true }) // Definindo o tipo explicitamente
+  whatsappId: number | null; // Permitir que a propriedade seja null
 
   @BelongsTo(() => Whatsapp)
-  whatsapp: Whatsapp;
+  whatsapp: Whatsapp; // Propriedade adicionada
 
   @CreatedAt
   createdAt: Date;
@@ -66,7 +64,10 @@ class User extends Model<User> {
   tickets: Ticket[];
 
   @BelongsToMany(() => Queue, () => UserQueue)
-  queues: Queue[];
+  queues: Queue[]; // Propriedade adicionada
+
+  @BelongsToMany(() => Company, () => EmpresaFuncionario)
+  company: Company[]; // Relação com a empresa
 
   @BeforeUpdate
   @BeforeCreate
@@ -79,15 +80,6 @@ class User extends Model<User> {
   public checkPassword = async (password: string): Promise<boolean> => {
     return compare(password, this.getDataValue("passwordHash"));
   };
-
-  // Chave estrangeira que referencia a empresa à qual o usuário pertence
-  @ForeignKey(() => Company)
-  @Column
-  companiesId: number;
-
-  // Relacionamento Many-to-One: um usuário pertence a uma empresa
-  @BelongsTo(() => Company)
-  company: Company;
 }
 
 export default User;
