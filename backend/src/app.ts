@@ -5,6 +5,7 @@ import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import * as Sentry from "@sentry/node";
+import session from "express-session";
 
 import "./database";
 import uploadConfig from "./config/upload";
@@ -17,6 +18,18 @@ Sentry.init({ dsn: process.env.SENTRY_DSN });
 const app = express();
 // Serve o arquivo HTML do frontend
 app.use(express.static("frontend"));
+app.use(
+  session({
+    secret: "seuSegredoSuperSeguro",  // Alterar isso depois
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 60 * 60 * 1000 }, 
+}))
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log("Sessão atual:", req.session);
+  next();
+});
 
 app.use(
   cors({

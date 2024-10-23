@@ -66,6 +66,10 @@ class User extends Model<User> {
   @BelongsToMany(() => Queue, () => UserQueue)
   queues: Queue[]; // Propriedade adicionada
 
+  @ForeignKey(() => Company)
+  @Column
+  companyId: number;
+
   @BelongsToMany(() => Company, () => EmpresaFuncionario)
   company: Company[]; // Relação com a empresa
 
@@ -80,6 +84,8 @@ class User extends Model<User> {
   public checkPassword = async (password: string): Promise<boolean> => {
     return compare(password, this.getDataValue("passwordHash"));
   };
+  companiesId: any;
+  static companiesId: number | undefined;
 }
 
 export default User;
