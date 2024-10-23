@@ -11,7 +11,7 @@ import WhatsappQueue from "../models/WhatsappQueue";
 import UserQueue from "../models/UserQueue";
 import QuickAnswer from "../models/QuickAnswer";
 import Company from "../models/Company";
-import EmpresaFuncionario from "../models/EmpresaFuncionario";
+import UserCompany from "../models/UserCompany";
 
 // eslint-disable-next-line
 const dbConfig = require("../config/database");
@@ -32,20 +32,9 @@ const models = [
   UserQueue,
   QuickAnswer,
   Company,
-  EmpresaFuncionario
+  UserCompany
 ];
 
 sequelize.addModels(models);
 
-// Sincronizando todos os modelos
-const syncDatabase = async () => {
-  try {
-    await sequelize.sync({ alter: true }); // 'alter' ajusta as tabelas existentes
-    console.log("Banco de dados sincronizado com sucesso!");
-  } catch (error) {
-    console.error("Erro ao sincronizar o banco de dados:", error);
-  }
-};
-
-syncDatabase();
 export default sequelize;

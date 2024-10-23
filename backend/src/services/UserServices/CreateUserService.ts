@@ -2,7 +2,7 @@ import * as Yup from "yup";
 import AppError from "../../errors/AppError";
 import { SerializeUser } from "../../helpers/SerializeUser";
 import User from "../../models/User";
-import EmpresaFuncionario from "../../models/EmpresaFuncionario";
+import UserCompany from "../../models/UserCompany";
 
 interface Request {
   email: string;
@@ -65,7 +65,7 @@ const CreateUserService = async ({
 
   await user.$set("queues", queueIds);
 
-  await EmpresaFuncionario.create({
+  await UserCompany.create({
     userId: user.id,
     companyId
   });

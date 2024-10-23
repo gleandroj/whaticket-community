@@ -51,7 +51,7 @@ class Contact extends Model<Contact> {
 
   @ForeignKey(() => Company)
   @Column
-  companiesId: number;
+  companyId: number;
 
   @HasMany(() => Ticket)
   tickets: Ticket[];

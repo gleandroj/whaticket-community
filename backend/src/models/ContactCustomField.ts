@@ -27,7 +27,7 @@ class ContactCustomField extends Model<ContactCustomField> {
 
   @ForeignKey(() => Company)
   @Column
-  companiesId: number;
+  companyId: number;
 
   @ForeignKey(() => Contact)
   @Column

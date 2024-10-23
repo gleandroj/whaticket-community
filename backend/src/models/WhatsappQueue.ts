@@ -32,7 +32,7 @@ class WhatsappQueue extends Model<WhatsappQueue> {
 
   @ForeignKey(() => Company)
   @Column
-  companiesId: number;
+  companyId: number;
 }
 
 export default WhatsappQueue;

@@ -7,7 +7,7 @@ import {
   BelongsToMany
 } from "sequelize-typescript";
 import User from "./User";
-import EmpresaFuncionario from "./EmpresaFuncionario";
+import UserCompany from "./UserCompany";
 
 @Table
 class Company extends Model<Company> {
@@ -25,7 +25,7 @@ class Company extends Model<Company> {
   @Column
   cnpj: string;
 
-  @BelongsToMany(() => User, () => EmpresaFuncionario)
+  @BelongsToMany(() => User, () => UserCompany)
   userId: User[]; // Relação com User
 }
 

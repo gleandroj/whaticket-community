@@ -49,7 +49,7 @@ module.exports = {
         type: DataTypes.DATE(6),
         allowNull: false
       },
-      companiesId: {
+      companyId: {
         type: DataTypes.INTEGER,
         references: { model: "Companies", key: "id" },
         onUpdate: "CASCADE",

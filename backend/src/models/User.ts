@@ -20,7 +20,7 @@ import Ticket from "./Ticket";
 import Queue from "./Queue";
 import UserQueue from "./UserQueue";
 import Whatsapp from "./Whatsapp";
-import EmpresaFuncionario from "./EmpresaFuncionario";
+import UserCompany from "./UserCompany";
 
 @Table
 class User extends Model<User> {
@@ -70,7 +70,7 @@ class User extends Model<User> {
   @Column
   companyId: number;
 
-  @BelongsToMany(() => Company, () => EmpresaFuncionario)
+  @BelongsToMany(() => Company, () => UserCompany)
   company: Company[]; // Relação com a empresa
 
   @BeforeUpdate
@@ -84,8 +84,6 @@ class User extends Model<User> {
   public checkPassword = async (password: string): Promise<boolean> => {
     return compare(password, this.getDataValue("passwordHash"));
   };
-  companiesId: any;
-  static companiesId: number | undefined;
 }
 
 export default User;

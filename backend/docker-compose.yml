@@ -6,11 +6,9 @@ services:
     env_file:
       - .env
     environment:
-      - POSTGRES_DB=${RDS_NAME}
-      - POSTGRES_HOST=${RDS_HOST}
-      - POSTGRES_PORT=${RDS_PORT}
-      - POSTGRES_USERNAME=${RDS_USERNAME}
-      - POSTGRES_PASSWORD=${RDS_PASSWORD}
+      - POSTGRES_DB=postgres
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_PASSWORD=postgres
     ports:
       - "5432:5432"
     volumes:

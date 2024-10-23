@@ -72,7 +72,7 @@ class Ticket extends Model<Ticket> {
 
   @ForeignKey(() => Company)
   @Column
-  companiesId: number;
+  companyId: number;
 
   @BelongsTo(() => Queue)
   queue: Queue;

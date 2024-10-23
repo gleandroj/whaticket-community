@@ -10,7 +10,7 @@ import User from "./User";
 import Company from "./Company";
 
 @Table
-class EmpresaFuncionario extends Model<EmpresaFuncionario> {
+class UserCompany extends Model<UserCompany> {
   @ForeignKey(() => User)
   @Column
   userId: number; // ID do usuário
@@ -26,4 +26,4 @@ class EmpresaFuncionario extends Model<EmpresaFuncionario> {
   updatedAt: Date;
 }
 
-export default EmpresaFuncionario;
+export default UserCompany;

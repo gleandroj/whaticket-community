@@ -10,14 +10,15 @@
     "dev:server": "ts-node-dev --respawn --transpile-only --ignore node_modules src/server.ts",
     "pretest": "NODE_ENV=test sequelize db:migrate && NODE_ENV=test sequelize db:seed:all",
     "test": "NODE_ENV=test jest",
-    "posttest": "NODE_ENV=test sequelize db:migrate:undo:all"
-  
+    "posttest": "NODE_ENV=test sequelize db:migrate:undo:all",
+    "sequelize": "sequelize",
+    "setup:db": "sequelize db:migrate && sequelize db:seed:all"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
     "@sentry/node": "^5.29.2",
-    "@types/lodash": "^4.17.5",
+    "@types/lodash": "4.17.5",
     "@types/pino": "^6.3.4",
     "backend": "file:",
     "bcryptjs": "^2.4.3",
@@ -27,6 +28,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
+    "express-session": "^1.18.1",
     "http-graceful-shutdown": "^2.3.2",
     "jsonwebtoken": "^8.5.1",
     "multer": "^1.4.2",

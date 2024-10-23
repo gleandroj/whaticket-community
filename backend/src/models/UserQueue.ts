@@ -22,7 +22,7 @@ class UserQueue extends Model<UserQueue> {
 
   @ForeignKey(() => Company)
   @Column
-  companiesId: number;
+  companyId: number;
 
   @CreatedAt
   createdAt: Date;

@@ -46,7 +46,7 @@ class Queue extends Model<Queue> {
 
   @ForeignKey(() => Company)
   @Column
-  companiesId: number;
+  companyId: number;
 
   @BelongsToMany(() => Whatsapp, () => WhatsappQueue)
   whatsapps: Array<Whatsapp & { WhatsappQueue: WhatsappQueue }>;

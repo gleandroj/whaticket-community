@@ -32,7 +32,7 @@ class QuickAnswer extends Model<QuickAnswer> {
 
   @ForeignKey(() => Company)
   @Column
-  companiesId: number;
+  companyId: number;
 }
 
 export default QuickAnswer;

@@ -69,7 +69,7 @@ class Message extends Model<Message> {
 
   @ForeignKey(() => Company)
   @Column
-  companiesId: number;
+  companyId: number;
 
   @ForeignKey(() => Ticket)
   @Column
