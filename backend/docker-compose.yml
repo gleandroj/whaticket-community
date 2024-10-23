@@ -1,0 +1,19 @@
+version: '3.7'
+services:
+  db:
+    image: postgres:13.8-alpine3.16
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=${RDS_NAME}
+      - POSTGRES_HOST=${RDS_HOST}
+      - POSTGRES_PORT=${RDS_PORT}
+      - POSTGRES_USERNAME=${RDS_USERNAME}
+      - POSTGRES_PASSWORD=${RDS_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+volumes:
+  db:
