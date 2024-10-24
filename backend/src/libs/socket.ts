@@ -26,7 +26,10 @@ export const initIO = (httpServer: Server): SocketIO => {
       return io;
     }
 
+    console.log({ tokenData });
+
     logger.info("Client Connected");
+
     socket.on("joinChatBox", (ticketId: string) => {
       logger.info("A client joined a ticket channel");
       socket.join(ticketId);

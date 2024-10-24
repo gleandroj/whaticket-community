@@ -7,6 +7,7 @@ import Company from "../../models/Company";
 interface Request {
   searchParam?: string;
   pageNumber?: string | number;
+  companyId?: number;
 }
 
 interface Response {
@@ -17,7 +18,8 @@ interface Response {
 
 const ListUsersService = async ({
   searchParam = "",
-  pageNumber = "1"
+  pageNumber = "1",
+  companyId
 }: Request): Promise<Response> => {
   const whereCondition = {
     [Op.or]: [
@@ -34,7 +36,9 @@ const ListUsersService = async ({
   const limit = 20;
   const offset = limit * (+pageNumber - 1);
 
-  const { count, rows: users } = await User.findAndCountAll({
+  const { count, rows: users } = await User.scope([
+    { method: ["companyId", companyId] }
+  ]).findAndCountAll({
     where: whereCondition,
     attributes: ["name", "id", "email", "profile", "createdAt"],
     limit,
@@ -43,7 +47,7 @@ const ListUsersService = async ({
     include: [
       { model: Queue, as: "queues", attributes: ["id", "name", "color"] },
       { model: Whatsapp, as: "whatsapp", attributes: ["id", "name"] },
-      { model: Company, as: "company", attributes: ["id", "name"] } // Adicionando a empresa
+      { model: Company, as: "companies", attributes: ["id", "name"] } // Adicionando a empresa
     ]
   });
 

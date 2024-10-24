@@ -10,7 +10,7 @@ interface Request {
   name: string;
   queueIds?: number[];
   profile?: string;
-  companyId: number; // Adicionado companyId como obrigatório
+  companiesIds?: number[];
 }
 
 interface Response {
@@ -26,7 +26,7 @@ const CreateUserService = async ({
   name,
   queueIds = [],
   profile = "admin",
-  companyId
+  companiesIds
 }: Request): Promise<Response> => {
   const schema = Yup.object().shape({
     name: Yup.string().required().min(2),
@@ -43,12 +43,12 @@ const CreateUserService = async ({
         }
       ),
     password: Yup.string().required().min(5),
-    companyId: Yup.number().required("Company is required.") // Validando companyId
+    companiesIds: Yup.array().of(Yup.number())
   });
 
   try {
-    await schema.validate({ email, password, name, companyId });
-  } catch (err) {
+    await schema.validate({ email, password, name, companiesIds });
+  } catch (err: Error | any) {
     throw new AppError(err.message);
   }
 
@@ -57,20 +57,24 @@ const CreateUserService = async ({
       email,
       password,
       name,
-      profile,
-      companyId
+      profile
     },
-    { include: ["queues", "whatsapp"] }
+    { include: ["queues", "whatsapp", "companies"] }
   );
 
+  await user.$set("companies", companiesIds || []);
   await user.$set("queues", queueIds);
 
-  await UserCompany.create({
-    userId: user.id,
-    companyId
-  });
-
   await user.reload();
+
+  user.companies.forEach(company => {
+    const isLast =
+      user.companies.indexOf(company) === user.companies.length - 1;
+    UserCompany.update(
+      { isActive: isLast },
+      { where: { companyId: company.id } }
+    );
+  });
 
   return SerializeUser(user);
 };

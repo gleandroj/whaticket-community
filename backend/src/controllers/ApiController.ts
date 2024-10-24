@@ -31,7 +31,8 @@ interface ContactData {
 
 const createContact = async (
   whatsappId: number | undefined,
-  newContact: string
+  newContact: string,
+  companyId: number
 ) => {
   await CheckIsValidContact(newContact);
 
@@ -46,7 +47,7 @@ const createContact = async (
     number,
     profilePicUrl,
     isGroup: false,
-    companyId: 1
+    companyId
   };
 
   const contact = await CreateOrUpdateContactService(contactData);
@@ -92,7 +93,11 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     throw new AppError(err.message);
   }
 
-  const contactAndTicket = await createContact(whatsappId, newContact.number);
+  const contactAndTicket = await createContact(
+    whatsappId,
+    newContact.number,
+    req.user.companyId
+  );
 
   if (medias) {
     await Promise.all(

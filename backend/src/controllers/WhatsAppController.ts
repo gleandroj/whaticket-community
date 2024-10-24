@@ -19,7 +19,7 @@ interface WhatsappData {
 }
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
-  const whatsapps = await ListWhatsAppsService();
+  const whatsapps = await ListWhatsAppsService(req.user.companyId);
 
   return res.status(200).json(whatsapps);
 };
@@ -40,7 +40,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     isDefault,
     greetingMessage,
     farewellMessage,
-    queueIds
+    queueIds,
+    companyId: req.user.companyId
   });
 
   StartWhatsAppSession(whatsapp);

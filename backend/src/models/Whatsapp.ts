@@ -1,24 +1,26 @@
 import {
-  Table,
+  AllowNull,
+  AutoIncrement,
+  BelongsToMany,
   Column,
   CreatedAt,
-  UpdatedAt,
-  Model,
   DataType,
-  PrimaryKey,
-  AutoIncrement,
   Default,
-  AllowNull,
+  ForeignKey,
   HasMany,
+  Model,
+  PrimaryKey,
+  Table,
   Unique,
-  BelongsToMany,
-  ForeignKey
+  UpdatedAt
 } from "sequelize-typescript";
+import Company from "./Company";
 import Queue from "./Queue";
+import { CompanyScope } from "./scopes";
 import Ticket from "./Ticket";
 import WhatsappQueue from "./WhatsappQueue";
-import Company from "./Company";
 
+@CompanyScope
 @Table
 class Whatsapp extends Model<Whatsapp> {
   @PrimaryKey

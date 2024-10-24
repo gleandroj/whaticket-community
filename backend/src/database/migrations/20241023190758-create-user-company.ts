@@ -2,7 +2,7 @@ import { QueryInterface, DataTypes } from "sequelize";
 
 module.exports = {
   up: async (queryInterface: QueryInterface) => {
-    await queryInterface.createTable("UserCompany", {
+    await queryInterface.createTable("UserCompanies", {
       userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -12,6 +12,11 @@ module.exports = {
         },
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
+      },
+      isActive: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
       },
       companyId: {
         type: DataTypes.INTEGER,
@@ -37,6 +42,6 @@ module.exports = {
   },
 
   down: async (queryInterface: QueryInterface) => {
-    await queryInterface.dropTable("EmpresaFuncionario");
+    await queryInterface.dropTable("UserCompanies");
   }
 };

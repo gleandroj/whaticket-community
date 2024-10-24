@@ -20,21 +20,24 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
 
   const { users, count, hasMore } = await ListUsersService({
     searchParam,
-    pageNumber
+    pageNumber,
+    companyId: req.user.companyId
   });
 
   return res.json({ users, count, hasMore });
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
-  const { email, password, name, profile, queueIds, companyId } = req.body;
-
+  const { email, password, name, profile, queueIds, companiesIds } = req.body;
   if (
     req.url === "/signup" &&
     (await CheckSettingsHelper("userCreation")) === "disabled"
   ) {
     throw new AppError("ERR_USER_CREATION_DISABLED", 403);
-  } else if (req.url !== "/signup" && req.user.profile !== "admin") {
+  } else if (
+    req.url !== "/signup" &&
+    !["admin", "superAdmin"].includes(req.user.profile)
+  ) {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
 
@@ -44,7 +47,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     name,
     profile,
     queueIds,
-    companyId
+    companiesIds
   });
 
   const io = getIO();
@@ -68,7 +71,7 @@ export const update = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  if (req.user.profile !== "admin") {
+  if (!["admin", "superAdmin"].includes(req.user.profile)) {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
 
@@ -92,7 +95,7 @@ export const remove = async (
 ): Promise<Response> => {
   const { userId } = req.params;
 
-  if (req.user.profile !== "admin") {
+  if (!["admin", "superAdmin"].includes(req.user.profile)) {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
 

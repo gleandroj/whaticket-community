@@ -8,20 +8,11 @@ import AuthUserService from "../services/UserServices/AuthUserService";
 export const store = async (req: Request, res: Response): Promise<Response> => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ where: { email }, include: ['company'] });
+  const user = await User.findOne({ where: { email }, include: ["companies"] });
 
-
-if (!user) {
-  throw new Error("Usuário não encontrado.");
-}
-
-
-console.log(user.name);
-console.log(user.company);
-
-  req.session.companyId = user.companyId;
-
-
+  if (!user) {
+    throw new Error("Usuário não encontrado.");
+  }
 
   const { token, serializedUser, refreshToken } = await AuthUserService({
     email,
@@ -55,7 +46,6 @@ export const update = async (
 
   return res.json({ token: newToken, user });
 };
-
 
 export const remove = async (
   req: Request,

@@ -7,6 +7,7 @@ import ListCompaniesService from "../services/CompanyServices/ListCompaniesServi
 import ShowCompanyService from "../services/CompanyServices/ShowCompanyService";
 import UpdateCompanyService from "../services/CompanyServices/UpdateCompanyService";
 import DeleteCompanyService from "../services/CompanyServices/DeleteCompanyService";
+import ShowUserService from "../services/UserServices/ShowUserService";
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
   const searchParam = (req.query.searchParam as string) || "";
@@ -23,8 +24,11 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
-  const companyData = req.body;
+  if (req.user.profile !== "superAdmin") {
+    throw new AppError("Você não tem permissão para criar empresas", 403);
+  }
 
+  const companyData = req.body;
   const company = await CreateCompanyService(companyData);
 
   const io = getIO();

@@ -13,11 +13,14 @@ import Company from "./Company";
 class UserCompany extends Model<UserCompany> {
   @ForeignKey(() => User)
   @Column
-  userId: number; // ID do usuário
+  userId: number;
 
   @ForeignKey(() => Company)
   @Column
-  companyId: number; // ID da empresa
+  companyId: number;
+
+  @Column
+  isActive: boolean;
 
   @CreatedAt
   createdAt: Date;

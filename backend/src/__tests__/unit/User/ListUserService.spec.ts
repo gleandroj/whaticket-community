@@ -27,7 +27,8 @@ describe("User", () => {
     });
 
     const response = await ListUsersService({
-      pageNumber: 1
+      pageNumber: 1,
+      companyId: 2 // Adicione um valor válido
     });
 
     expect(response).toHaveProperty("users");

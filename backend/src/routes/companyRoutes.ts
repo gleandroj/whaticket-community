@@ -1,12 +1,13 @@
 import { Router } from "express";
 import * as CompanyController from "../controllers/CompanyController";
+import isAuth from "../middleware/isAuth";
 
 const companyRoutes = Router();
 
-companyRoutes.post("/companies", CompanyController.store);
-companyRoutes.get("/companies", CompanyController.index);
-companyRoutes.get("/companies/:id", CompanyController.show);
-companyRoutes.put("/companies/:id", CompanyController.update);
-companyRoutes.delete("/companies/:id", CompanyController.remove);
+companyRoutes.post("/companies", isAuth, CompanyController.store);
+companyRoutes.get("/companies", isAuth, CompanyController.index);
+companyRoutes.get("/companies/:id", isAuth, CompanyController.show);
+companyRoutes.put("/companies/:id", isAuth, CompanyController.update);
+companyRoutes.delete("/companies/:id", isAuth, CompanyController.remove);
 
 export default companyRoutes;

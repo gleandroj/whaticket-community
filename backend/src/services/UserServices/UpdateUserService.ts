@@ -2,6 +2,7 @@ import * as Yup from "yup";
 
 import AppError from "../../errors/AppError";
 import { SerializeUser } from "../../helpers/SerializeUser";
+import UserCompany from "../../models/UserCompany";
 import ShowUserService from "./ShowUserService";
 
 interface UserData {
@@ -11,7 +12,7 @@ interface UserData {
   profile?: string;
   queueIds?: number[];
   whatsappId?: number;
-  companyId?: number; // Adicionando o companyId aqui
+  companiesIds?: number[];
 }
 
 interface Request {
@@ -37,7 +38,7 @@ const UpdateUserService = async ({
     email: Yup.string().email(),
     profile: Yup.string(),
     password: Yup.string(),
-    companyId: Yup.number().nullable() // Validando o companyId
+    companiesIds: Yup.array().of(Yup.number())
   });
 
   const {
@@ -46,12 +47,12 @@ const UpdateUserService = async ({
     profile,
     name,
     queueIds = [],
-    companyId // Capturando o companyId
+    companiesIds
   } = userData;
 
   try {
     await schema.validate({ email, password, profile, name });
-  } catch (err) {
+  } catch (err: Error | any) {
     throw new AppError(err.message);
   }
 
@@ -59,13 +60,25 @@ const UpdateUserService = async ({
     email,
     password,
     profile,
-    name,
-    companyId: companyId ?? null // Atualizando o companyId
+    name
   });
+
+  if (companiesIds) {
+    await user.$set("companies", companiesIds);
+  }
 
   await user.$set("queues", queueIds);
 
   await user.reload();
+
+  user.companies.forEach(company => {
+    const isLast =
+      user.companies.indexOf(company) === user.companies.length - 1;
+    UserCompany.update(
+      { isActive: isLast },
+      { where: { companyId: company.id } }
+    );
+  });
 
   return SerializeUser(user);
 };

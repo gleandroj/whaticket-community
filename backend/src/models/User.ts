@@ -1,28 +1,39 @@
+import { compare, hash } from "bcryptjs";
 import {
-  Table,
-  Column,
-  Model,
-  PrimaryKey,
   AutoIncrement,
-  ForeignKey,
-  BelongsToMany,
-  HasMany,
-  BelongsTo,
-  DataType,
   BeforeCreate,
   BeforeUpdate,
+  BelongsTo,
+  BelongsToMany,
+  Column,
   CreatedAt,
+  DataType,
+  ForeignKey,
+  HasMany,
+  Model,
+  PrimaryKey,
+  Scopes,
+  Table,
   UpdatedAt
 } from "sequelize-typescript";
-import { hash, compare } from "bcryptjs";
 import Company from "./Company";
-import Ticket from "./Ticket";
 import Queue from "./Queue";
+import Ticket from "./Ticket";
+import UserCompany from "./UserCompany";
 import UserQueue from "./UserQueue";
 import Whatsapp from "./Whatsapp";
-import UserCompany from "./UserCompany";
 
 @Table
+@Scopes(() => ({
+  companyId: (companyId: number) => ({
+    include: [
+      {
+        model: Company,
+        where: { id: companyId }
+      }
+    ]
+  })
+}))
 class User extends Model<User> {
   @PrimaryKey
   @AutoIncrement
@@ -64,14 +75,10 @@ class User extends Model<User> {
   tickets: Ticket[];
 
   @BelongsToMany(() => Queue, () => UserQueue)
-  queues: Queue[]; // Propriedade adicionada
-
-  @ForeignKey(() => Company)
-  @Column
-  companyId: number;
+  queues: Queue[];
 
   @BelongsToMany(() => Company, () => UserCompany)
-  company: Company[]; // Relação com a empresa
+  companies: Array<Company & { UserCompany: UserCompany }>;
 
   @BeforeUpdate
   @BeforeCreate

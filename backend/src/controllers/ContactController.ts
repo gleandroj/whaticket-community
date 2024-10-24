@@ -8,7 +8,7 @@ import ShowContactService from "../services/ContactServices/ShowContactService";
 import UpdateContactService from "../services/ContactServices/UpdateContactService";
 import DeleteContactService from "../services/ContactServices/DeleteContactService";
 
-import CheckContactNumber from "../services/WbotServices/CheckNumber"
+import CheckContactNumber from "../services/WbotServices/CheckNumber";
 import CheckIsValidContact from "../services/WbotServices/CheckIsValidContact";
 import GetProfilePicUrl from "../services/WbotServices/GetProfilePicUrl";
 import AppError from "../errors/AppError";
@@ -54,7 +54,8 @@ export const getContact = async (
 
   const contact = await GetContactService({
     name,
-    number
+    number,
+    companyId: req.user.companyId
   });
 
   return res.status(200).json(contact);
@@ -92,7 +93,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     number,
     email,
     extraInfo,
-    profilePicUrl
+    profilePicUrl,
+    companyId: req.user.companyId
   });
 
   const io = getIO();

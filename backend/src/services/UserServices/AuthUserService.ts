@@ -36,7 +36,7 @@ const AuthUserService = async ({
     where: { email },
     include: [
       { model: Queue, as: "queues" },
-      { model: Company, as: "company" } // <- Incluindo a empresa
+      { model: Company, as: "companies" } // <- Incluindo a empresa
     ]
   });
 

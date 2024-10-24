@@ -41,15 +41,15 @@ const messages = {
         },
         messages: {
           inAttendance: {
-            title: "In Service"
+            title: "In Service",
           },
           waiting: {
-            title: "Waiting"
+            title: "Waiting",
           },
           closed: {
-            title: "Closed"
-          }
-        }
+            title: "Closed",
+          },
+        },
       },
       connections: {
         title: "Connections",
@@ -207,6 +207,7 @@ const messages = {
           password: "Password",
           profile: "Profile",
           whatsapp: "Default Connection",
+          company: "Company",
         },
         buttons: {
           okAdd: "Add",
@@ -344,6 +345,7 @@ const messages = {
           name: "Name",
           email: "Email",
           profile: "Profile",
+          company: "Company",
           whatsapp: "Default Connection",
           actions: "Actions",
         },
@@ -384,7 +386,8 @@ const messages = {
         },
       },
       messagesInput: {
-        placeholderOpen: "Type a message or press ''/'' to use the registered quick responses",
+        placeholderOpen:
+          "Type a message or press ''/'' to use the registered quick responses",
         placeholderClosed: "Reopen or accept this ticket to send a message.",
         signMessage: "Sign",
       },

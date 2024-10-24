@@ -65,6 +65,7 @@ const FindOrCreateTicketService = async (
 
   if (!ticket) {
     ticket = await Ticket.create({
+      companyId: contact.companyId,
       contactId: groupContact ? groupContact.id : contact.id,
       status: "pending",
       isGroup: !!groupContact,

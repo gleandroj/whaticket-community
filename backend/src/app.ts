@@ -1,14 +1,12 @@
-import "./bootstrap";
-import "reflect-metadata";
-import "express-async-errors";
-import express, { Request, Response, NextFunction } from "express";
-import cors from "cors";
-import cookieParser from "cookie-parser";
 import * as Sentry from "@sentry/node";
-import session from "express-session";
-
-import "./database";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import express, { NextFunction, Request, Response } from "express";
+import "express-async-errors";
+import "reflect-metadata";
+import "./bootstrap";
 import uploadConfig from "./config/upload";
+import "./database";
 import AppError from "./errors/AppError";
 import routes from "./routes";
 import { logger } from "./utils/logger";
@@ -18,19 +16,6 @@ Sentry.init({ dsn: process.env.SENTRY_DSN });
 const app = express();
 // Serve o arquivo HTML do frontend
 app.use(express.static("frontend"));
-app.use(
-  session({
-    secret: "seuSegredoSuperSeguro",  // Alterar isso depois
-    resave: false,
-    saveUninitialized: false,
-    cookie: { maxAge: 60 * 60 * 1000 }, 
-}))
-
-app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log("Sessão atual:", req.session);
-  next();
-});
-
 app.use(
   cors({
     credentials: true,

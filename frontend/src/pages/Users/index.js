@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useReducer } from "react"; // Tu ta importando duas vezes a mesma parada??
 import { toast } from "react-toastify";
-import openSocket from "../../services/socket-io"; 
+import openSocket from "../../services/socket-io";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
@@ -241,14 +241,14 @@ const Users = () => {
                 {i18n.t("users.table.email")}
               </TableCell>
               <TableCell align="center">
-                {i18n.t("users.company.name")}
+                {i18n.t("users.table.company")}
               </TableCell>
               <TableCell align="center">
                 {i18n.t("users.table.profile")}
               </TableCell>
               <TableCell align="center">
                 {i18n.t("users.table.whatsapp")}
-              </TableCell>              
+              </TableCell>
               <TableCell align="center">
                 {i18n.t("users.table.actions")}
               </TableCell>
@@ -260,7 +260,9 @@ const Users = () => {
                 <TableRow key={user.id}>
                   <TableCell align="center">{user.name}</TableCell>
                   <TableCell align="center">{user.email}</TableCell>
-                  <TableCell align="center">{user.company?.id}</TableCell>
+                  <TableCell align="center">
+                    {user.companies.map((c) => c.name).join(", ")}
+                  </TableCell>
                   <TableCell align="center">{user.profile}</TableCell>
                   <TableCell align="center">{user.whatsapp?.name}</TableCell>
                   <TableCell align="center">
