@@ -11,7 +11,9 @@ import {
 } from "sequelize-typescript";
 import Contact from "./Contact";
 import Company from "./Company";
+import { CompanyScope } from "./scopes";
 
+@CompanyScope
 @Table
 class ContactCustomField extends Model<ContactCustomField> {
   @PrimaryKey

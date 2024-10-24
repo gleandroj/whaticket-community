@@ -26,7 +26,7 @@ describe("Auth", () => {
       email,
       password,
       // Adicione whatsappId
-      companyId: 2 // Adicione companyId
+      companiesIds: [2] // Adicione companyId
     });
 
     const response = await AuthUserService({
@@ -56,7 +56,7 @@ describe("Auth", () => {
       email: "mail@test.com",
       password: faker.internet.password(),
       // Adicione um valor válido
-      companyId: 2 // Adicione um valor válido
+      companiesIds: [2]// Adicione um valor válido
     });
 
     try {

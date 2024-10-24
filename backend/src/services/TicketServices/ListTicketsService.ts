@@ -17,7 +17,7 @@ interface Request {
   userId: string;
   withUnreadMessages?: string;
   queueIds: number[];
-  companyId?: number; // Adicionado companyId
+  companyId?: number; 
 }
 
 interface Response {
@@ -41,13 +41,7 @@ const ListTicketsService = async ({
     [Op.or]: [{ userId }, { status: "pending" }],
     queueId: { [Op.or]: [queueIds, null] }
   };
-  // Adicionando companyId ao whereCondition se fornecido
-  if (companyId) {
-    whereCondition = {
-      ...whereCondition,
-      companyId // Incluindo a condição para companyId
-    };
-  }
+
   let includeCondition: Includeable[];
 
   includeCondition = [
@@ -144,7 +138,9 @@ const ListTicketsService = async ({
   const limit = 40;
   const offset = limit * (+pageNumber - 1);
 
-  const { count, rows: tickets } = await Ticket.findAndCountAll({
+  const { count, rows: tickets } = await Ticket.scope([
+    { method: ["companyId", companyId] }
+  ]).findAndCountAll({
     where: whereCondition,
     include: includeCondition,
     distinct: true,

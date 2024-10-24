@@ -28,6 +28,7 @@ interface ExtraInfo {
   name: string;
   value: string;
 }
+
 interface ContactData {
   name: string;
   number: string;
@@ -40,7 +41,8 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
 
   const { contacts, count, hasMore } = await ListContactsService({
     searchParam,
-    pageNumber
+    pageNumber,
+    companyId: req.user.companyId
   });
 
   return res.json({ contacts, count, hasMore });
@@ -55,7 +57,7 @@ export const getContact = async (
   const contact = await GetContactService({
     name,
     number,
-    companyId: req.user.companyId
+    companyId: req.user.companyId!
   });
 
   return res.status(200).json(contact);
@@ -94,7 +96,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     email,
     extraInfo,
     profilePicUrl,
-    companyId: req.user.companyId
+    companyId: req.user.companyId!
   });
 
   const io = getIO();

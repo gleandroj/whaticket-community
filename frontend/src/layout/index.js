@@ -1,6 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
 import clsx from "clsx";
-
 import {
   makeStyles,
   Drawer,
@@ -13,11 +12,9 @@ import {
   IconButton,
   Menu,
 } from "@material-ui/core";
-
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import AccountCircle from "@material-ui/icons/AccountCircle";
-
 import MainListItems from "./MainListItems";
 import NotificationsPopOver from "../components/NotificationsPopOver";
 import UserModal from "../components/UserModal";
@@ -25,6 +22,7 @@ import CompanyModal from "../components/CompanyModal";
 import { AuthContext } from "../context/Auth/AuthContext";
 import BackdropLoading from "../components/BackdropLoading";
 import { i18n } from "../translate/i18n";
+import UserCompanySwitch from "../components/UserCompanySwitch";
 
 const drawerWidth = 240;
 
@@ -120,9 +118,6 @@ const LoggedInLayout = ({ children }) => {
   const [drawerVariant, setDrawerVariant] = useState("permanent");
   const { user } = useContext(AuthContext);
 
-  const[companyModalOpen, setCompanyModalOpen] = useState(false);
-  const { company } = useContext(AuthContext);
-
   useEffect(() => {
     if (document.body.offsetWidth > 600) {
       setDrawerOpen(true);
@@ -196,11 +191,6 @@ const LoggedInLayout = ({ children }) => {
         onClose={() => setUserModalOpen(false)}
         userId={user?.id}
       />
-      <CompanyModal
-      open={companyModalOpen}
-      onClose={()=> setCompanyModalOpen(false)}
-      companyId={company?.id}
-      />
       <AppBar
         position="absolute"
         className={clsx(classes.appBar, drawerOpen && classes.appBarShift)}
@@ -228,8 +218,8 @@ const LoggedInLayout = ({ children }) => {
           >
             WhaTicket
           </Typography>
+          <UserCompanySwitch />
           {user.id && <NotificationsPopOver />}
-
           <div>
             <IconButton
               aria-label="account of current user"

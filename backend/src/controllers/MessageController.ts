@@ -27,7 +27,8 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
 
   const { count, messages, ticket, hasMore } = await ListMessagesService({
     pageNumber,
-    ticketId
+    ticketId,
+    companyId: req.user.companyId
   });
 
   SetTicketMessagesAsRead(ticket);

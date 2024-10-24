@@ -96,7 +96,7 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
   const contactAndTicket = await createContact(
     whatsappId,
     newContact.number,
-    req.user.companyId
+    req.user.companyId!
   );
 
   if (medias) {

@@ -15,7 +15,9 @@ import {
 import ContactCustomField from "./ContactCustomField";
 import Ticket from "./Ticket";
 import Company from "./Company";
+import { CompanyScope } from "./scopes";
 
+@CompanyScope
 @Table
 class Contact extends Model<Contact> {
   @PrimaryKey

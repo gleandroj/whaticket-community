@@ -23,7 +23,7 @@ describe("User", () => {
       email: faker.internet.email(),
       password: faker.internet.password(),
       // Adicione um valor válido
-      companyId: 2 // Adicione um valor válido
+      companiesIds: [2] // Adicione um valor válido
     });
 
     const updatedUser = await UpdateUserService({
@@ -56,7 +56,7 @@ describe("User", () => {
       email: faker.internet.email(),
       password: faker.internet.password(),
       // Adicione um valor válido
-      companyId: 2 // Adicione um valor válido
+      companiesIds: [2] // Adicione um valor válido
     });
 
     const userId = newUser.id;

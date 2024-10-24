@@ -38,7 +38,11 @@ const UpdateContactService = async ({
   if (extraInfo) {
     await Promise.all(
       extraInfo.map(async info => {
-        await ContactCustomField.upsert({ ...info, contactId: contact.id });
+        await ContactCustomField.upsert({
+          ...info,
+          contactId: contact.id,
+          companyId: contact.companyId
+        });
       })
     );
 

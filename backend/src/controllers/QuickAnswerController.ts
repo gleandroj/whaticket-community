@@ -25,7 +25,8 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
 
   const { quickAnswers, count, hasMore } = await ListQuickAnswerService({
     searchParam,
-    pageNumber
+    pageNumber,
+    companyId: req.user.companyId
   });
 
   return res.json({ quickAnswers, count, hasMore });
@@ -46,13 +47,15 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   }
 
   const quickAnswer = await CreateQuickAnswerService({
-    ...newQuickAnswer
+    ...newQuickAnswer,
+    companyId: req.user.companyId!
   });
 
   const io = getIO();
   io.emit("quickAnswer", {
     action: "create",
-    quickAnswer
+    quickAnswer,
+  
   });
 
   return res.status(200).json(quickAnswer);

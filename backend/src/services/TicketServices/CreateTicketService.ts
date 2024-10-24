@@ -10,7 +10,7 @@ interface Request {
   status: string;
   userId: number;
   queueId?: number;
-  companyId?: number; // Adicionado companyId
+  companyId?: number;
 }
 
 const CreateTicketService = async ({
@@ -18,7 +18,7 @@ const CreateTicketService = async ({
   status,
   userId,
   queueId,
-  companyId // Incluindo companyId como parâmetro
+  companyId
 }: Request): Promise<Ticket> => {
   const defaultWhatsapp = await GetDefaultWhatsApp(userId);
 

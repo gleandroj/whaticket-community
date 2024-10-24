@@ -41,7 +41,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     greetingMessage,
     farewellMessage,
     queueIds,
-    companyId: req.user.companyId
+    companyId: req.user.companyId!
   });
 
   StartWhatsAppSession(whatsapp);
