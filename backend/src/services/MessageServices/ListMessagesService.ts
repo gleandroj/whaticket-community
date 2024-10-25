@@ -6,6 +6,7 @@ import ShowTicketService from "../TicketServices/ShowTicketService";
 interface Request {
   ticketId: string;
   pageNumber?: string;
+  companyId?: number;
 }
 
 interface Response {
@@ -17,7 +18,8 @@ interface Response {
 
 const ListMessagesService = async ({
   pageNumber = "1",
-  ticketId
+  ticketId,
+  companyId
 }: Request): Promise<Response> => {
   const ticket = await ShowTicketService(ticketId);
 
@@ -29,7 +31,9 @@ const ListMessagesService = async ({
   const limit = 20;
   const offset = limit * (+pageNumber - 1);
 
-  const { count, rows: messages } = await Message.findAndCountAll({
+  const { count, rows: messages } = await Message.scope([
+    { method: ["companyId", companyId] }
+  ]).findAndCountAll({
     where: { ticketId },
     limit,
     include: [

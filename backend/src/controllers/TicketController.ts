@@ -54,7 +54,8 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     showAll,
     userId,
     queueIds,
-    withUnreadMessages
+    withUnreadMessages,
+    companyId: req.user.companyId
   });
 
   return res.status(200).json({ tickets, count, hasMore });
@@ -63,10 +64,16 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
 export const store = async (req: Request, res: Response): Promise<Response> => {
   const { contactId, status, userId }: TicketData = req.body;
 
-  const ticket = await CreateTicketService({ contactId, status, userId });
+  const ticket = await CreateTicketService({
+    contactId,
+    status,
+    userId,
+    companyId: req.user.companyId
+  });
 
-  const io = getIO();
-  io.to(ticket.status).emit("ticket", {
+  const io = getIO(req.user.companyId);
+
+  io.to(`tickets:${ticket.status}`).emit("ticket", {
     action: "update",
     ticket
   });
@@ -118,9 +125,9 @@ export const remove = async (
 
   const ticket = await DeleteTicketService(ticketId);
 
-  const io = getIO();
-  io.to(ticket.status)
-    .to(ticketId)
+  const io = getIO(req.user.companyId);
+  io.to(`tickets:${ticket.status}`)
+    .to(`chatBox:${ticketId}`)
     .to("notification")
     .emit("ticket", {
       action: "delete",

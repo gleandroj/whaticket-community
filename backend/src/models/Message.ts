@@ -12,7 +12,10 @@ import {
 } from "sequelize-typescript";
 import Contact from "./Contact";
 import Ticket from "./Ticket";
+import Company from "./Company";
+import { CompanyScope } from "./scopes";
 
+@CompanyScope
 @Table
 class Message extends Model<Message> {
   @PrimaryKey
@@ -65,6 +68,10 @@ class Message extends Model<Message> {
 
   @BelongsTo(() => Message, "quotedMsgId")
   quotedMsg: Message;
+
+  @ForeignKey(() => Company)
+  @Column
+  companyId: number;
 
   @ForeignKey(() => Ticket)
   @Column

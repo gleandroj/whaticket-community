@@ -1,39 +1,35 @@
-import React, { useState, useEffect, useReducer, useContext } from "react";
-import openSocket from "../../services/socket-io";
-import { toast } from "react-toastify";
-import { useHistory } from "react-router-dom";
-
+import Avatar from "@material-ui/core/Avatar";
+import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
-import Avatar from "@material-ui/core/Avatar";
-import WhatsAppIcon from "@material-ui/icons/WhatsApp";
-import SearchIcon from "@material-ui/icons/Search";
 import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
-
-import IconButton from "@material-ui/core/IconButton";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import EditIcon from "@material-ui/icons/Edit";
-
-import api from "../../services/api";
-import TableRowSkeleton from "../../components/TableRowSkeleton";
-import ContactModal from "../../components/ContactModal";
-import ConfirmationModal from "../../components/ConfirmationModal/";
-
-import { i18n } from "../../translate/i18n";
-import MainHeader from "../../components/MainHeader";
-import Title from "../../components/Title";
-import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper";
-import MainContainer from "../../components/MainContainer";
-import toastError from "../../errors/toastError";
-import { AuthContext } from "../../context/Auth/AuthContext";
+import SearchIcon from "@material-ui/icons/Search";
+import WhatsAppIcon from "@material-ui/icons/WhatsApp";
+import React, { useContext, useEffect, useReducer, useState } from "react";
+import { useHistory } from "react-router-dom";
+import { toast } from "react-toastify";
 import { Can } from "../../components/Can";
+import ConfirmationModal from "../../components/ConfirmationModal/";
+import ContactModal from "../../components/ContactModal";
+import MainContainer from "../../components/MainContainer";
+import MainHeader from "../../components/MainHeader";
+import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper";
+import TableRowSkeleton from "../../components/TableRowSkeleton";
+import Title from "../../components/Title";
+import { AuthContext } from "../../context/Auth/AuthContext";
+import { useSocketIO } from "../../context/SocketIO";
+import toastError from "../../errors/toastError";
+import api from "../../services/api";
+import { i18n } from "../../translate/i18n";
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_CONTACTS") {
@@ -93,6 +89,7 @@ const Contacts = () => {
   const history = useHistory();
 
   const { user } = useContext(AuthContext);
+  const { connectToSocket } = useSocketIO();
 
   const [loading, setLoading] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
@@ -130,9 +127,9 @@ const Contacts = () => {
   }, [searchParam, pageNumber]);
 
   useEffect(() => {
-    const socket = openSocket();
+    const socket = connectToSocket();
 
-    socket.on("contact", (data) => {
+    const onContact = (data) => {
       if (data.action === "update" || data.action === "create") {
         dispatch({ type: "UPDATE_CONTACTS", payload: data.contact });
       }
@@ -140,10 +137,12 @@ const Contacts = () => {
       if (data.action === "delete") {
         dispatch({ type: "DELETE_CONTACT", payload: +data.contactId });
       }
-    });
+    };
+
+    socket.on("contact", onContact);
 
     return () => {
-      socket.disconnect();
+      socket.off("contact", onContact);
     };
   }, []);
 

@@ -9,11 +9,15 @@ import {
   AllowNull,
   Unique,
   Default,
-  HasMany
+  HasMany,
+  ForeignKey
 } from "sequelize-typescript";
 import ContactCustomField from "./ContactCustomField";
 import Ticket from "./Ticket";
+import Company from "./Company";
+import { CompanyScope } from "./scopes";
 
+@CompanyScope
 @Table
 class Contact extends Model<Contact> {
   @PrimaryKey
@@ -46,6 +50,10 @@ class Contact extends Model<Contact> {
 
   @UpdatedAt
   updatedAt: Date;
+
+  @ForeignKey(() => Company)
+  @Column
+  companyId: number;
 
   @HasMany(() => Ticket)
   tickets: Ticket[];

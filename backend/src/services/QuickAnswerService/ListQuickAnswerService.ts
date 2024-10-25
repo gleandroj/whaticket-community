@@ -4,6 +4,7 @@ import QuickAnswer from "../../models/QuickAnswer";
 interface Request {
   searchParam?: string;
   pageNumber?: string;
+  companyId?: number;
 }
 
 interface Response {
@@ -14,7 +15,8 @@ interface Response {
 
 const ListQuickAnswerService = async ({
   searchParam = "",
-  pageNumber = "1"
+  pageNumber = "1",
+  companyId
 }: Request): Promise<Response> => {
   const whereCondition = {
     message: Sequelize.where(
@@ -26,7 +28,9 @@ const ListQuickAnswerService = async ({
   const limit = 20;
   const offset = limit * (+pageNumber - 1);
 
-  const { count, rows: quickAnswers } = await QuickAnswer.findAndCountAll({
+  const { count, rows: quickAnswers } = await QuickAnswer.scope([
+    { method: ["companyId", companyId] }
+  ]).findAndCountAll({
     where: whereCondition,
     limit,
     offset,

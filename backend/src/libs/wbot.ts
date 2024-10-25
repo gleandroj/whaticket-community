@@ -1,10 +1,10 @@
 import qrCode from "qrcode-terminal";
 import { Client, LocalAuth } from "whatsapp-web.js";
-import { getIO } from "./socket";
-import Whatsapp from "../models/Whatsapp";
 import AppError from "../errors/AppError";
-import { logger } from "../utils/logger";
+import Whatsapp from "../models/Whatsapp";
 import { handleMessage } from "../services/WbotServices/wbotMessageListener";
+import { logger } from "../utils/logger";
+import { getIO } from "./socket";
 
 interface Session extends Client {
   id?: number;
@@ -12,7 +12,7 @@ interface Session extends Client {
 
 const sessions: Session[] = [];
 
-const syncUnreadMessages = async (wbot: Session) => {
+const syncUnreadMessages = async (wbot: Session, whatsapp: Whatsapp) => {
   const chats = await wbot.getChats();
 
   /* eslint-disable no-restricted-syntax */
@@ -24,7 +24,7 @@ const syncUnreadMessages = async (wbot: Session) => {
       });
 
       for (const msg of unreadMessages) {
-        await handleMessage(msg, wbot);
+        await handleMessage(msg, wbot, whatsapp);
       }
 
       await chat.sendSeen();
@@ -35,7 +35,7 @@ const syncUnreadMessages = async (wbot: Session) => {
 export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
   return new Promise((resolve, reject) => {
     try {
-      const io = getIO();
+      const io = getIO(whatsapp.companyId);
       const sessionName = whatsapp.name;
       let sessionCfg;
 
@@ -43,20 +43,25 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         sessionCfg = JSON.parse(whatsapp.session);
       }
 
-      const args:String = process.env.CHROME_ARGS || "";
+      const args: string = process.env.CHROME_ARGS || "";
+      logger.info(
+        `Session: ${sessionName} INITIALIZING... CHROME_BIN=${process.env.CHROME_BIN} CHROME_WS=${process.env.CHROME_WS}, CHROME_ARGS=${args}`
+      );
 
       const wbot: Session = new Client({
         session: sessionCfg,
-        authStrategy: new LocalAuth({clientId: 'bd_'+whatsapp.id}),
+        authStrategy: new LocalAuth({ clientId: `bd_${whatsapp.id}` }),
         puppeteer: {
           executablePath: process.env.CHROME_BIN || undefined,
-          // @ts-ignore
           browserWSEndpoint: process.env.CHROME_WS || undefined,
-          args: args.split(' ')
+          args: args.split(" ")
         }
       });
 
-      wbot.initialize();
+      logger.info(`Session: ${sessionName} INITIALIZING`);
+      wbot.initialize().then(() => {
+        logger.info(`Session: ${sessionName} INITIALIZED`);
+      });
 
       wbot.on("qr", async qr => {
         logger.info("Session:", sessionName);
@@ -75,12 +80,29 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         });
       });
 
-      wbot.on("authenticated", async session => {
+      wbot.on("disconnected", async reason => {
+        logger.error(`Session: ${sessionName} DISCONNECTED! Reason: ${reason}`);
+
+        const retry = whatsapp.retries;
+        await whatsapp.update({
+          status: "DISCONNECTED",
+          retries: retry + 1
+        });
+
+        io.emit("whatsappSession", {
+          action: "update",
+          session: whatsapp
+        });
+
+        reject(new Error("Error starting whatsapp session."));
+      });
+
+      wbot.on("authenticated", async () => {
         logger.info(`Session: ${sessionName} AUTHENTICATED`);
       });
 
       wbot.on("auth_failure", async msg => {
-        console.error(
+        logger.error(
           `Session: ${sessionName} AUTHENTICATION FAILURE! Reason: ${msg}`
         );
 
@@ -123,13 +145,15 @@ export const initWbot = async (whatsapp: Whatsapp): Promise<Session> => {
         }
 
         wbot.sendPresenceAvailable();
-        await syncUnreadMessages(wbot);
+        await syncUnreadMessages(wbot, whatsapp);
 
         resolve(wbot);
       });
-    } catch (err) {
+    } catch (err: Error | any) {
       logger.error(err);
     }
+
+    logger.info(`Session: ${whatsapp.name} INITIALIZING...`);
   });
 };
 
@@ -149,7 +173,7 @@ export const removeWbot = (whatsappId: number): void => {
       sessions[sessionIndex].destroy();
       sessions.splice(sessionIndex, 1);
     }
-  } catch (err) {
+  } catch (err: Error | any) {
     logger.error(err);
   }
 };

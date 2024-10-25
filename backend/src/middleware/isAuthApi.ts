@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 
 import AppError from "../errors/AppError";
 import ListSettingByValueService from "../services/SettingServices/ListSettingByValueService";
@@ -25,6 +25,13 @@ const isAuthApi = async (
     if (getToken.value !== token) {
       throw new AppError("ERR_SESSION_EXPIRED", 401);
     }
+
+    req.user = {
+      isApiToken: true,
+      id: "",
+      profile: "",
+      companyId: getToken.companyId
+    };
   } catch (err) {
     console.log(err);
     throw new AppError(

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
+
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import SearchIcon from "@material-ui/icons/Search";
@@ -8,11 +9,14 @@ import Tab from "@material-ui/core/Tab";
 import Badge from "@material-ui/core/Badge";
 import MoveToInboxIcon from "@material-ui/icons/MoveToInbox";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
+
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
+
 import NewTicketModal from "../NewTicketModal";
 import TicketsList from "../TicketsList";
 import TabPanel from "../TabPanel";
+
 import { i18n } from "../../translate/i18n";
 import { AuthContext } from "../../context/Auth/AuthContext";
 import { Can } from "../Can";
@@ -28,50 +32,54 @@ const useStyles = makeStyles((theme) => ({
     overflow: "hidden",
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
-    backgroundColor: theme.palette.background.default,
-    color: theme.palette.text.primary,
   },
+
   tabsHeader: {
     flex: "none",
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: "#eee",
   },
+
   settingsIcon: {
     alignSelf: "center",
     marginLeft: "auto",
     padding: 8,
   },
+
   tab: {
     minWidth: 120,
     width: 120,
   },
+
   ticketOptionsBox: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    background: theme.palette.background.paper,
+    background: "#fafafa",
     padding: theme.spacing(1),
   },
+
   serachInputWrapper: {
     flex: 1,
-    background: theme.palette.background.default,
+    background: "#fff",
     display: "flex",
     borderRadius: 40,
     padding: 4,
     marginRight: theme.spacing(1),
   },
+
   searchIcon: {
     color: "grey",
     marginLeft: 6,
     marginRight: 6,
     alignSelf: "center",
   },
+
   searchInput: {
     flex: 1,
     border: "none",
     borderRadius: 30,
-    color: theme.palette.text.primary, 
-    backgroundColor: theme.palette.background.default,
   },
+
   badge: {
     right: "-10px",
   },
@@ -85,6 +93,7 @@ const useStyles = makeStyles((theme) => ({
 
 const TicketsManager = () => {
   const classes = useStyles();
+
   const [searchParam, setSearchParam] = useState("");
   const [tab, setTab] = useState("open");
   const [tabOpen, setTabOpen] = useState("open");
@@ -92,8 +101,10 @@ const TicketsManager = () => {
   const [showAllTickets, setShowAllTickets] = useState(false);
   const searchInputRef = useRef();
   const { user } = useContext(AuthContext);
+
   const [openCount, setOpenCount] = useState(0);
   const [pendingCount, setPendingCount] = useState(0);
+
   const userQueueIds = user.queues.map((q) => q.id);
   const [selectedQueueIds, setSelectedQueueIds] = useState(userQueueIds || []);
 

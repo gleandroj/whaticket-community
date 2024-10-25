@@ -28,8 +28,8 @@ const SetTicketMessagesAsRead = async (ticket: Ticket): Promise<void> => {
     );
   }
 
-  const io = getIO();
-  io.to(ticket.status).to("notification").emit("ticket", {
+  const io = getIO(ticket.companyId);
+  io.to(`tickets:${ticket.status}`).to("notification").emit("ticket", {
     action: "updateUnread",
     ticketId: ticket.id
   });

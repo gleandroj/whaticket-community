@@ -41,15 +41,15 @@ const messages = {
         },
         messages: {
           inAttendance: {
-            title: "Em Atendimento"
+            title: "Em Atendimento",
           },
           waiting: {
-            title: "Aguardando"
+            title: "Aguardando",
           },
           closed: {
-            title: "Finalizado"
-          }
-        }
+            title: "Finalizado",
+          },
+        },
       },
       connections: {
         title: "Conexões",
@@ -108,7 +108,7 @@ const messages = {
         form: {
           name: "Nome",
           default: "Padrão",
-          farewellMessage: "Mensagem de despedida"
+          farewellMessage: "Mensagem de despedida",
         },
         buttons: {
           okAdd: "Adicionar",
@@ -209,6 +209,7 @@ const messages = {
           password: "Senha",
           profile: "Perfil",
           whatsapp: "Conexão Padrão",
+          compnay: "Empresa",
         },
         buttons: {
           okAdd: "Adicionar",
@@ -348,9 +349,11 @@ const messages = {
           name: "Nome",
           email: "Email",
           profile: "Perfil",
+          company: "Empresa",
           whatsapp: "Conexão Padrão",
           actions: "Ações",
         },
+
         buttons: {
           add: "Adicionar usuário",
         },
@@ -388,7 +391,8 @@ const messages = {
         },
       },
       messagesInput: {
-        placeholderOpen: "Digite uma mensagem ou tecle ''/'' para utilizar as respostas rápidas cadastrada",
+        placeholderOpen:
+          "Digite uma mensagem ou tecle ''/'' para utilizar as respostas rápidas cadastrada",
         placeholderClosed:
           "Reabra ou aceite esse ticket para enviar uma mensagem.",
         signMessage: "Assinar",
@@ -462,6 +466,31 @@ const messages = {
           "Esta cor já está em uso, escolha outra.",
         ERR_WAPP_GREETING_REQUIRED:
           "A mensagem de saudação é obrigatório quando há mais de uma fila.",
+        ERR_QUEUE_NAME_ALREADY_EXISTS: "Já existe uma fila com este nome.",
+      },
+      users: {
+        title: "Usuários",
+        table: {
+          name: "Nome",
+          email: "Email",
+          profile: "Perfil",
+          whatsapp: "Conexão Padrão",
+          actions: "Ações",
+        },
+        buttons: {
+          add: "Adicionar usuário",
+        },
+        toasts: {
+          deleted: "Usuário excluído com sucesso.",
+        },
+        confirmationModal: {
+          deleteTitle: "Excluir",
+          deleteMessage:
+            "Todos os dados do usuário serão perdidos. Os tickets abertos deste usuário serão movidos para a fila.",
+        },
+      },
+      userCompanySwitch: {
+        noCompanies: "Nenhuma empresa encontrada.",
       },
     },
   },

@@ -21,11 +21,14 @@ describe("User", () => {
     await CreateUserService({
       name: faker.name.findName(),
       email: faker.internet.email(),
-      password: faker.internet.password()
+      password: faker.internet.password(),
+      // Adicione um valor válido
+      companiesIds: [2] // Adicione um valor válido
     });
 
     const response = await ListUsersService({
-      pageNumber: 1
+      pageNumber: 1,
+      companyId: 2 // Adicione um valor válido
     });
 
     expect(response).toHaveProperty("users");

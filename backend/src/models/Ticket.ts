@@ -17,7 +17,10 @@ import Message from "./Message";
 import Queue from "./Queue";
 import User from "./User";
 import Whatsapp from "./Whatsapp";
+import Company from "./Company";
+import { CompanyScope } from "./scopes";
 
+@CompanyScope
 @Table
 class Ticket extends Model<Ticket> {
   @PrimaryKey
@@ -68,6 +71,10 @@ class Ticket extends Model<Ticket> {
   @ForeignKey(() => Queue)
   @Column
   queueId: number;
+
+  @ForeignKey(() => Company)
+  @Column
+  companyId: number;
 
   @BelongsTo(() => Queue)
   queue: Queue;

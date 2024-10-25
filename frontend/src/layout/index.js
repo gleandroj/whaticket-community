@@ -11,20 +11,18 @@ import {
   MenuItem,
   IconButton,
   Menu,
-  Switch,
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import AccountCircle from "@material-ui/icons/AccountCircle";
-import Brightness4Icon from "@material-ui/icons/Brightness4";
-
 import MainListItems from "./MainListItems";
 import NotificationsPopOver from "../components/NotificationsPopOver";
 import UserModal from "../components/UserModal";
+import CompanyModal from "../components/CompanyModal";
 import { AuthContext } from "../context/Auth/AuthContext";
 import BackdropLoading from "../components/BackdropLoading";
 import { i18n } from "../translate/i18n";
-import { useThemeContext } from "../context/DarkMode";
+import UserCompanySwitch from "../components/UserCompanySwitch";
 
 const drawerWidth = 240;
 
@@ -36,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
       height: "calc(100vh - 56px)",
     },
   },
+
   toolbar: {
     paddingRight: 24, // keep right padding when drawer closed
   },
@@ -52,7 +51,6 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    backgroundColor: theme.palette.background.default,
   },
   appBarShift: {
     marginLeft: drawerWidth,
@@ -64,14 +62,12 @@ const useStyles = makeStyles((theme) => ({
   },
   menuButton: {
     marginRight: 36,
-    color: theme.palette.text.primary,
   },
   menuButtonHidden: {
     display: "none",
   },
   title: {
     flexGrow: 1,
-    color: theme.palette.text.primary,
   },
   drawerPaper: {
     position: "relative",
@@ -81,7 +77,6 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
-    backgroundColor: theme.palette.background.paper,
   },
   drawerPaperClose: {
     overflowX: "hidden",
@@ -111,19 +106,6 @@ const useStyles = makeStyles((theme) => ({
     overflow: "auto",
     flexDirection: "column",
   },
-  switch: {
-    transform: "scale(0.8)",
-  },
-  iconButton: {
-    color: theme.palette.text.primary,
-  },
-  themeSwitchContainer: {
-    display: "flex",
-    alignItems: "center",
-  },
-  themeIcon: {
-    color: theme.palette.text.primary,
-  },
 }));
 
 const LoggedInLayout = ({ children }) => {
@@ -135,7 +117,6 @@ const LoggedInLayout = ({ children }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerVariant, setDrawerVariant] = useState("permanent");
   const { user } = useContext(AuthContext);
-  const { darkMode, toggleTheme } = useThemeContext();
 
   useEffect(() => {
     if (document.body.offsetWidth > 600) {
@@ -213,10 +194,12 @@ const LoggedInLayout = ({ children }) => {
       <AppBar
         position="absolute"
         className={clsx(classes.appBar, drawerOpen && classes.appBarShift)}
+        color={process.env.NODE_ENV === "development" ? "inherit" : "primary"}
       >
         <Toolbar variant="dense" className={classes.toolbar}>
           <IconButton
             edge="start"
+            color="inherit"
             aria-label="open drawer"
             onClick={() => setDrawerOpen(!drawerOpen)}
             className={clsx(
@@ -229,33 +212,21 @@ const LoggedInLayout = ({ children }) => {
           <Typography
             component="h1"
             variant="h6"
+            color="inherit"
             noWrap
             className={classes.title}
           >
             WhaTicket
           </Typography>
-
-          <div className={classes.themeSwitchContainer}>
-            <Brightness4Icon className={classes.themeIcon} />
-            <Switch
-              checked={darkMode}
-              onChange={toggleTheme}
-              color="default"
-              className={classes.switch}
-            />
-          </div>
-
-          {user.id && (
-            <NotificationsPopOver className={classes.iconButton} />
-          )}
-
+          <UserCompanySwitch />
+          {user.id && <NotificationsPopOver />}
           <div>
             <IconButton
               aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleMenu}
-              className={classes.iconButton}
+              color="inherit"
             >
               <AccountCircle />
             </IconButton>
@@ -286,6 +257,7 @@ const LoggedInLayout = ({ children }) => {
       </AppBar>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
+
         {children ? children : null}
       </main>
     </div>

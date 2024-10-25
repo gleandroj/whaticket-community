@@ -1,13 +1,9 @@
 import AppError from "../../errors/AppError";
 import Setting from "../../models/Setting";
 
-interface Response {
-  key: string;
-  value: string;
-}
 const ListSettingByKeyService = async (
   value: string
-): Promise<Response | undefined> => {
+): Promise<Setting | undefined> => {
   const settings = await Setting.findOne({
     where: { value }
   });
@@ -16,7 +12,7 @@ const ListSettingByKeyService = async (
     throw new AppError("ERR_NO_API_TOKEN_FOUND", 404);
   }
 
-  return { key: settings.key, value: settings.value };
+  return settings;
 };
 
 export default ListSettingByKeyService;

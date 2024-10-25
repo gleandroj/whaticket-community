@@ -1,8 +1,8 @@
-import { QueryInterface, DataTypes } from "sequelize";
+import { DataTypes, QueryInterface } from "sequelize";
 
 module.exports = {
-  up: (queryInterface: QueryInterface) => {
-    return queryInterface.createTable("Whatsapps", {
+  up: async (queryInterface: QueryInterface) => {
+    await queryInterface.createTable("Whatsapps", {
       id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -18,6 +18,10 @@ module.exports = {
       status: {
         type: DataTypes.STRING
       },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
       battery: {
         type: DataTypes.STRING
       },
@@ -31,7 +35,18 @@ module.exports = {
       updatedAt: {
         type: DataTypes.DATE,
         allowNull: false
+      },
+      companyId: {
+        type: DataTypes.INTEGER,
+        references: { model: "Companies", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL"
       }
+    });
+
+    await queryInterface.addConstraint("Whatsapps", ["name", "companyId"], {
+      type: "unique",
+      name: "whatsapps_unique_name_companyId"
     });
   },
 

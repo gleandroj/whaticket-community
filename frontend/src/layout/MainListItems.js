@@ -116,6 +116,17 @@ const MainListItems = (props) => {
               primary={i18n.t("mainDrawer.listItems.users")}
               icon={<PeopleAltOutlinedIcon />}
             />
+            <Can
+              role={user.profile}
+              perform="drawer-admin-items:companies:view"
+              yes={() => (
+                <ListItemLink
+                  to="/companies"
+                  primary={i18n.t("Empresa")}
+                  icon={<PeopleAltOutlinedIcon />}
+                />
+              )}
+            />
             <ListItemLink
               to="/queues"
               primary={i18n.t("mainDrawer.listItems.queues")}

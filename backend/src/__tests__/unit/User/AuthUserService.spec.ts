@@ -24,7 +24,9 @@ describe("Auth", () => {
     await CreateUserService({
       name: faker.name.findName(),
       email,
-      password
+      password,
+      // Adicione whatsappId
+      companiesIds: [2] // Adicione companyId
     });
 
     const response = await AuthUserService({
@@ -52,7 +54,9 @@ describe("Auth", () => {
     await CreateUserService({
       name: faker.name.findName(),
       email: "mail@test.com",
-      password: faker.internet.password()
+      password: faker.internet.password(),
+      // Adicione um valor válido
+      companiesIds: [2]// Adicione um valor válido
     });
 
     try {

@@ -1,22 +1,26 @@
 import {
-  Table,
+  AllowNull,
+  AutoIncrement,
+  BelongsToMany,
   Column,
   CreatedAt,
-  UpdatedAt,
-  Model,
   DataType,
-  PrimaryKey,
-  AutoIncrement,
   Default,
-  AllowNull,
+  ForeignKey,
   HasMany,
+  Model,
+  PrimaryKey,
+  Table,
   Unique,
-  BelongsToMany
+  UpdatedAt
 } from "sequelize-typescript";
+import Company from "./Company";
 import Queue from "./Queue";
+import { CompanyScope } from "./scopes";
 import Ticket from "./Ticket";
 import WhatsappQueue from "./WhatsappQueue";
 
+@CompanyScope
 @Table
 class Whatsapp extends Model<Whatsapp> {
   @PrimaryKey
@@ -63,6 +67,10 @@ class Whatsapp extends Model<Whatsapp> {
 
   @UpdatedAt
   updatedAt: Date;
+
+  @ForeignKey(() => Company)
+  @Column
+  companyId: number;
 
   @HasMany(() => Ticket)
   tickets: Ticket[];

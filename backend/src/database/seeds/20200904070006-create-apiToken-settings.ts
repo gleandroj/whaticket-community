@@ -1,5 +1,6 @@
 import { QueryInterface } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
+import Setting from "../../models/Setting";
 
 module.exports = {
   up: (queryInterface: QueryInterface) => {
@@ -7,8 +8,9 @@ module.exports = {
       "Settings",
       [
         {
-          key: "userApiToken",
+          key: Setting.USER_API_TOKEN_KEY,
           value: uuidv4(),
+          companyId: 1,
           createdAt: new Date(),
           updatedAt: new Date()
         }
