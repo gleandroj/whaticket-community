@@ -10,7 +10,7 @@ export const StartWhatsAppSession = async (
 ): Promise<void> => {
   await whatsapp.update({ status: "OPENING" });
 
-  const io = getIO();
+  const io = getIO(whatsapp.companyId);
   io.emit("whatsappSession", {
     action: "update",
     session: whatsapp
@@ -18,9 +18,9 @@ export const StartWhatsAppSession = async (
 
   try {
     const wbot = await initWbot(whatsapp);
-    wbotMessageListener(wbot);
+    wbotMessageListener(wbot, whatsapp);
     wbotMonitor(wbot, whatsapp);
-  } catch (err) {
+  } catch (err: Error | any) {
     logger.error(err);
   }
 };

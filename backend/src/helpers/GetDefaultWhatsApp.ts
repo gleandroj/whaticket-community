@@ -3,24 +3,14 @@ import Whatsapp from "../models/Whatsapp";
 import GetDefaultWhatsAppByUser from "./GetDefaultWhatsAppByUser";
 
 const GetDefaultWhatsApp = async (
-  userId?: number
+  userId?: number,
+  companyId?: number
 ): Promise<Whatsapp> => {
-  if(userId) {
-    const whatsappByUser = await GetDefaultWhatsAppByUser(userId);
-    if(whatsappByUser !== null) {
-      return whatsappByUser;
-    }
+  const whatsapp = await GetDefaultWhatsAppByUser(userId, companyId);
+  if (whatsapp !== null) {
+    return whatsapp;
   }
-
-  const defaultWhatsapp = await Whatsapp.findOne({
-    where: { isDefault: true }
-  });
-
-  if (!defaultWhatsapp) {
-    throw new AppError("ERR_NO_DEF_WAPP_FOUND");
-  }
-
-  return defaultWhatsapp;
+  throw new AppError("ERR_NO_DEF_WAPP_FOUND");
 };
 
 export default GetDefaultWhatsApp;

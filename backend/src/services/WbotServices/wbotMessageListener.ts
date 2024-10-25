@@ -1,30 +1,27 @@
+import * as Sentry from "@sentry/node";
+import { writeFile } from "fs";
 import { join } from "path";
 import { promisify } from "util";
-import { writeFile } from "fs";
-import * as Sentry from "@sentry/node";
-
 import {
-  Contact as WbotContact,
-  Message as WbotMessage,
+  Client,
   MessageAck,
-  Client
+  Contact as WbotContact,
+  Message as WbotMessage
 } from "whatsapp-web.js";
-
-import Contact from "../../models/Contact";
-import Ticket from "../../models/Ticket";
-import Message from "../../models/Message";
-
-import { getIO } from "../../libs/socket";
-import CreateMessageService from "../MessageServices/CreateMessageService";
-import { logger } from "../../utils/logger";
-import CreateOrUpdateContactService from "../ContactServices/CreateOrUpdateContactService";
-import FindOrCreateTicketService from "../TicketServices/FindOrCreateTicketService";
-import ShowWhatsAppService from "../WhatsappService/ShowWhatsAppService";
 import { debounce } from "../../helpers/Debounce";
-import UpdateTicketService from "../TicketServices/UpdateTicketService";
-import CreateContactService from "../ContactServices/CreateContactService";
-import GetContactService from "../ContactServices/GetContactService";
 import formatBody from "../../helpers/Mustache";
+import { getIO } from "../../libs/socket";
+import Contact from "../../models/Contact";
+import Message from "../../models/Message";
+import Ticket from "../../models/Ticket";
+import Whatsapp from "../../models/Whatsapp";
+import { logger } from "../../utils/logger";
+import CreateContactService from "../ContactServices/CreateContactService";
+import CreateOrUpdateContactService from "../ContactServices/CreateOrUpdateContactService";
+import CreateMessageService from "../MessageServices/CreateMessageService";
+import FindOrCreateTicketService from "../TicketServices/FindOrCreateTicketService";
+import UpdateTicketService from "../TicketServices/UpdateTicketService";
+import ShowWhatsAppService from "../WhatsappService/ShowWhatsAppService";
 
 interface Session extends Client {
   id?: number;
@@ -32,19 +29,21 @@ interface Session extends Client {
 
 const writeFileAsync = promisify(writeFile);
 
-const verifyContact = async (msgContact: WbotContact): Promise<Contact> => {
+const verifyContact = async (
+  msgContact: WbotContact,
+  whatsapp: Whatsapp
+): Promise<Contact> => {
   const profilePicUrl = await msgContact.getProfilePicUrl();
 
   const contactData = {
     name: msgContact.name || msgContact.pushname || msgContact.id.user,
     number: msgContact.id.user,
     profilePicUrl,
-    isGroup: msgContact.isGroup
+    isGroup: msgContact.isGroup,
+    companyId: whatsapp.companyId
   };
 
-  const contact = CreateOrUpdateContactService(contactData);
-
-  return contact;
+  return CreateOrUpdateContactService(contactData);
 };
 
 const verifyQuotedMessage = async (
@@ -63,18 +62,18 @@ const verifyQuotedMessage = async (
   return quotedMsg;
 };
 
-
 // generate random id string for file names, function got from: https://stackoverflow.com/a/1349426/1851801
 function makeRandomId(length: number) {
-    let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const charactersLength = characters.length;
-    let counter = 0;
-    while (counter < length) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      counter += 1;
-    }
-    return result;
+  let result = "";
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const charactersLength = characters.length;
+  let counter = 0;
+  while (counter < length) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    counter += 1;
+  }
+  return result;
 }
 
 const verifyMediaMessage = async (
@@ -90,13 +89,16 @@ const verifyMediaMessage = async (
     throw new Error("ERR_WAPP_DOWNLOAD_MEDIA");
   }
 
-  let randomId = makeRandomId(5);
+  const randomId = makeRandomId(5);
 
   if (!media.filename) {
     const ext = media.mimetype.split("/")[1].split(";")[0];
     media.filename = `${randomId}-${new Date().getTime()}.${ext}`;
   } else {
-    media.filename = media.filename.split('.').slice(0,-1).join('.')+'.'+randomId+'.'+media.filename.split('.').slice(-1);
+    media.filename = `${media.filename
+      .split(".")
+      .slice(0, -1)
+      .join(".")}.${randomId}.${media.filename.split(".").slice(-1)}`;
   }
 
   try {
@@ -105,7 +107,7 @@ const verifyMediaMessage = async (
       media.data,
       "base64"
     );
-  } catch (err) {
+  } catch (err: Error | any) {
     Sentry.captureException(err);
     logger.error(err);
   }
@@ -119,13 +121,27 @@ const verifyMediaMessage = async (
     read: msg.fromMe,
     mediaUrl: media.filename,
     mediaType: media.mimetype.split("/")[0],
-    quotedMsgId: quotedMsg?.id
+    quotedMsgId: quotedMsg?.id,
+    companyId: ticket.companyId
   };
 
   await ticket.update({ lastMessage: msg.body || media.filename });
-  const newMessage = await CreateMessageService({ messageData });
+  return CreateMessageService({ messageData });
+};
 
-  return newMessage;
+const prepareLocation = (msg: WbotMessage): WbotMessage => {
+  const gmapsUrl = `https://maps.google.com/maps?q=${msg.location.latitude}%2C${msg.location.longitude}&z=17&hl=pt-BR`;
+
+  msg.body = `data:image/png;base64,${msg.body}|${gmapsUrl}`;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const location = msg.location as any;
+  msg.body += `|${
+    location.description
+      ? location.description
+      : `${location.latitude}, ${location.longitude}`
+  }`;
+
+  return msg;
 };
 
 const verifyMessage = async (
@@ -133,9 +149,7 @@ const verifyMessage = async (
   ticket: Ticket,
   contact: Contact
 ) => {
-
-  if (msg.type === 'location')
-    msg = prepareLocation(msg);
+  if (msg.type === "location") msg = prepareLocation(msg);
 
   const quotedMsg = await verifyQuotedMessage(msg);
   const messageData = {
@@ -146,26 +160,22 @@ const verifyMessage = async (
     fromMe: msg.fromMe,
     mediaType: msg.type,
     read: msg.fromMe,
-    quotedMsgId: quotedMsg?.id
+    quotedMsgId: quotedMsg?.id,
+    companyId: ticket.companyId
   };
+  const location = msg.location as any;
 
-  // temporaryly disable ts checks because of type definition bug for Location object
-  // @ts-ignore
-  await ticket.update({ lastMessage: msg.type === "location" ? msg.location.description ? "Localization - " + msg.location.description.split('\\n')[0] : "Localization" : msg.body });
+  await ticket.update({
+    lastMessage:
+      // eslint-disable-next-line no-nested-ternary
+      msg.type === "location"
+        ? location.description
+          ? `Localization - ${location.description.split("\\n")[0]}`
+          : "Localization"
+        : msg.body
+  });
 
   await CreateMessageService({ messageData });
-};
-
-const prepareLocation = (msg: WbotMessage): WbotMessage => {
-  let gmapsUrl = "https://maps.google.com/maps?q=" + msg.location.latitude + "%2C" + msg.location.longitude + "&z=17&hl=pt-BR";
-
-  msg.body = "data:image/png;base64," + msg.body + "|" + gmapsUrl;
-
-  // temporaryly disable ts checks because of type definition bug for Location object
-  // @ts-ignore
-  msg.body += "|" + (msg.location.description ? msg.location.description : (msg.location.latitude + ", " + msg.location.longitude))
-
-  return msg;
 };
 
 const verifyQueue = async (
@@ -235,7 +245,7 @@ const isValidMsg = (msg: WbotMessage): boolean => {
     msg.type === "image" ||
     msg.type === "document" ||
     msg.type === "vcard" ||
-    //msg.type === "multi_vcard" ||
+    // msg.type === "multi_vcard" ||
     msg.type === "sticker" ||
     msg.type === "location"
   )
@@ -245,7 +255,8 @@ const isValidMsg = (msg: WbotMessage): boolean => {
 
 const handleMessage = async (
   msg: WbotMessage,
-  wbot: Session
+  wbot: Session,
+  whatsapp: Whatsapp
 ): Promise<void> => {
   if (!isValidMsg(msg)) {
     return;
@@ -263,9 +274,14 @@ const handleMessage = async (
       // media messages sent from me from cell phone, first comes with "hasMedia = false" and type = "image/ptt/etc"
       // in this case, return and let this message be handled by "media_uploaded" event, when it will have "hasMedia = true"
 
-      if (!msg.hasMedia && msg.type !== "location" && msg.type !== "chat" && msg.type !== "vcard"
-        //&& msg.type !== "multi_vcard"
-      ) return;
+      if (
+        !msg.hasMedia &&
+        msg.type !== "location" &&
+        msg.type !== "chat" &&
+        msg.type !== "vcard"
+        // && msg.type !== "multi_vcard"
+      )
+        return;
 
       msgContact = await wbot.getContactById(msg.to);
     } else {
@@ -283,13 +299,14 @@ const handleMessage = async (
         msgGroupContact = await wbot.getContactById(msg.from);
       }
 
-      groupContact = await verifyContact(msgGroupContact);
+      groupContact = await verifyContact(msgGroupContact, whatsapp);
     }
-    const whatsapp = await ShowWhatsAppService(wbot.id!);
+
+    // const whatsapp = await ShowWhatsAppService(wbot.id!);
 
     const unreadMessages = msg.fromMe ? 0 : chat.unreadCount;
 
-    const contact = await verifyContact(msgContact);
+    const contact = await verifyContact(msgContact, whatsapp);
 
     if (
       unreadMessages === 0 &&
@@ -325,23 +342,25 @@ const handleMessage = async (
       try {
         const array = msg.body.split("\n");
         const obj = [];
-        let contact = "";
-        for (let index = 0; index < array.length; index++) {
+        let contactName = "";
+        for (let index = 0; index < array.length; index += 1) {
           const v = array[index];
           const values = v.split(":");
-          for (let ind = 0; ind < values.length; ind++) {
+          for (let ind = 0; ind < values.length; ind += 1) {
             if (values[ind].indexOf("+") !== -1) {
               obj.push({ number: values[ind] });
             }
             if (values[ind].indexOf("FN") !== -1) {
-              contact = values[ind + 1];
+              contactName = values[ind + 1];
             }
           }
         }
+        // eslint-disable-next-line no-restricted-syntax
         for await (const ob of obj) {
-          const cont = await CreateContactService({
-            name: contact,
-            number: ob.number.replace(/\D/g, "")
+          await CreateContactService({
+            name: contactName,
+            number: ob.number.replace(/\D/g, ""),
+            companyId: ticket.companyId
           });
         }
       } catch (error) {
@@ -418,8 +437,6 @@ const handleMessage = async (
 const handleMsgAck = async (msg: WbotMessage, ack: MessageAck) => {
   await new Promise(r => setTimeout(r, 500));
 
-  const io = getIO();
-
   try {
     const messageToUpdate = await Message.findByPk(msg.id.id, {
       include: [
@@ -436,7 +453,8 @@ const handleMsgAck = async (msg: WbotMessage, ack: MessageAck) => {
     }
     await messageToUpdate.update({ ack });
 
-    io.to(messageToUpdate.ticketId.toString()).emit("appMessage", {
+    const io = getIO(messageToUpdate.companyId);
+    io.to(`chatBox:${messageToUpdate.ticketId}`).emit("chatBoxMessage", {
       action: "update",
       message: messageToUpdate
     });
@@ -446,13 +464,13 @@ const handleMsgAck = async (msg: WbotMessage, ack: MessageAck) => {
   }
 };
 
-const wbotMessageListener = (wbot: Session): void => {
+const wbotMessageListener = (wbot: Session, whatsapp: Whatsapp): void => {
   wbot.on("message_create", async msg => {
-    handleMessage(msg, wbot);
+    handleMessage(msg, wbot, whatsapp);
   });
 
   wbot.on("media_uploaded", async msg => {
-    handleMessage(msg, wbot);
+    handleMessage(msg, wbot, whatsapp);
   });
 
   wbot.on("message_ack", async (msg, ack) => {
@@ -460,4 +478,4 @@ const wbotMessageListener = (wbot: Session): void => {
   });
 };
 
-export { wbotMessageListener, handleMessage };
+export { handleMessage, wbotMessageListener };

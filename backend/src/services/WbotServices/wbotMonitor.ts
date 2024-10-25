@@ -14,7 +14,7 @@ const wbotMonitor = async (
   wbot: Session,
   whatsapp: Whatsapp
 ): Promise<void> => {
-  const io = getIO();
+  const io = getIO(whatsapp.companyId);
   const sessionName = whatsapp.name;
 
   try {
@@ -22,7 +22,7 @@ const wbotMonitor = async (
       logger.info(`Monitor session: ${sessionName}, ${newState}`);
       try {
         await whatsapp.update({ status: newState });
-      } catch (err) {
+      } catch (err: Error | any) {
         Sentry.captureException(err);
         logger.error(err);
       }
@@ -41,7 +41,7 @@ const wbotMonitor = async (
 
       try {
         await whatsapp.update({ battery, plugged });
-      } catch (err) {
+      } catch (err: Error | any) {
         Sentry.captureException(err);
         logger.error(err);
       }
@@ -56,7 +56,7 @@ const wbotMonitor = async (
       logger.info(`Disconnected session: ${sessionName}, reason: ${reason}`);
       try {
         await whatsapp.update({ status: "OPENING", session: "" });
-      } catch (err) {
+      } catch (err: Error | any) {
         Sentry.captureException(err);
         logger.error(err);
       }
@@ -68,7 +68,7 @@ const wbotMonitor = async (
 
       setTimeout(() => StartWhatsAppSession(whatsapp), 2000);
     });
-  } catch (err) {
+  } catch (err: Error | any) {
     Sentry.captureException(err);
     logger.error(err);
   }

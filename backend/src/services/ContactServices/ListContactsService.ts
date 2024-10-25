@@ -4,6 +4,7 @@ import Contact from "../../models/Contact";
 interface Request {
   searchParam?: string;
   pageNumber?: string;
+  companyId?: number;
 }
 
 interface Response {
@@ -14,7 +15,8 @@ interface Response {
 
 const ListContactsService = async ({
   searchParam = "",
-  pageNumber = "1"
+  pageNumber = "1",
+  companyId
 }: Request): Promise<Response> => {
   const whereCondition = {
     [Op.or]: [
@@ -31,7 +33,9 @@ const ListContactsService = async ({
   const limit = 20;
   const offset = limit * (+pageNumber - 1);
 
-  const { count, rows: contacts } = await Contact.findAndCountAll({
+  const { count, rows: contacts } = await Contact.scope([
+    { method: ["companyId", companyId] }
+  ]).findAndCountAll({
     where: whereCondition,
     limit,
     offset,

@@ -1,34 +1,32 @@
-import React, { useState, useEffect, useReducer } from "react";
-import { toast } from "react-toastify";
-import openSocket from "../../services/socket-io";
-
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import Paper from "@material-ui/core/Paper";
+import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import IconButton from "@material-ui/core/IconButton";
-import SearchIcon from "@material-ui/icons/Search";
 import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
-
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import EditIcon from "@material-ui/icons/Edit";
-
+import SearchIcon from "@material-ui/icons/Search";
+import React, { useContext, useEffect, useReducer, useState } from "react";
+import { toast } from "react-toastify";
+import { Can } from "../../components/Can";
+import ConfirmationModal from "../../components/ConfirmationModal";
 import MainContainer from "../../components/MainContainer";
 import MainHeader from "../../components/MainHeader";
 import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper";
+import TableRowSkeleton from "../../components/TableRowSkeleton";
 import Title from "../../components/Title";
-
+import UserModal from "../../components/UserModal";
+import { AuthContext } from "../../context/Auth/AuthContext";
+import { useSocketIO } from "../../context/SocketIO";
+import toastError from "../../errors/toastError";
 import api from "../../services/api";
 import { i18n } from "../../translate/i18n";
-import TableRowSkeleton from "../../components/TableRowSkeleton";
-import UserModal from "../../components/UserModal";
-import ConfirmationModal from "../../components/ConfirmationModal";
-import toastError from "../../errors/toastError";
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_USERS") {
@@ -85,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Users = () => {
   const classes = useStyles();
-
+  const { connectToSocket } = useSocketIO();
   const [loading, setLoading] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(false);
@@ -95,6 +93,7 @@ const Users = () => {
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [searchParam, setSearchParam] = useState("");
   const [users, dispatch] = useReducer(reducer, []);
+  const { user: currentUser } = useContext(AuthContext);
 
   useEffect(() => {
     dispatch({ type: "RESET" });
@@ -122,9 +121,8 @@ const Users = () => {
   }, [searchParam, pageNumber]);
 
   useEffect(() => {
-    const socket = openSocket();
-
-    socket.on("user", (data) => {
+    const socket = connectToSocket();
+    const onUser = (data) => {
       if (data.action === "update" || data.action === "create") {
         dispatch({ type: "UPDATE_USERS", payload: data.user });
       }
@@ -132,10 +130,12 @@ const Users = () => {
       if (data.action === "delete") {
         dispatch({ type: "DELETE_USER", payload: +data.userId });
       }
-    });
+    };
+
+    socket.on("user", onUser);
 
     return () => {
-      socket.disconnect();
+      socket.off("user", onUser);
     };
   }, []);
 
@@ -241,11 +241,14 @@ const Users = () => {
                 {i18n.t("users.table.email")}
               </TableCell>
               <TableCell align="center">
+                {i18n.t("users.table.company")}
+              </TableCell>
+              <TableCell align="center">
                 {i18n.t("users.table.profile")}
               </TableCell>
               <TableCell align="center">
                 {i18n.t("users.table.whatsapp")}
-              </TableCell>              
+              </TableCell>
               <TableCell align="center">
                 {i18n.t("users.table.actions")}
               </TableCell>
@@ -257,25 +260,58 @@ const Users = () => {
                 <TableRow key={user.id}>
                   <TableCell align="center">{user.name}</TableCell>
                   <TableCell align="center">{user.email}</TableCell>
+                  <TableCell align="center">
+                    {user.companies.map((c) => c.name).join(", ")}
+                  </TableCell>
                   <TableCell align="center">{user.profile}</TableCell>
                   <TableCell align="center">{user.whatsapp?.name}</TableCell>
                   <TableCell align="center">
-                    <IconButton
-                      size="small"
-                      onClick={() => handleEditUser(user)}
-                    >
-                      <EditIcon />
-                    </IconButton>
+                    <Can
+                      role={currentUser.profile}
+                      perform={`user-list:edit:${user.profile}`}
+                      yes={() => (
+                        <>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleEditUser(user)}
+                          >
+                            <EditIcon />
+                          </IconButton>
 
-                    <IconButton
-                      size="small"
-                      onClick={(e) => {
-                        setConfirmModalOpen(true);
-                        setDeletingUser(user);
-                      }}
-                    >
-                      <DeleteOutlineIcon />
-                    </IconButton>
+                          <IconButton
+                            size="small"
+                            onClick={(e) => {
+                              setConfirmModalOpen(true);
+                              setDeletingUser(user);
+                            }}
+                          >
+                            <DeleteOutlineIcon />
+                          </IconButton>
+                        </>
+                      )}
+                      no={() => (
+                        <>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleEditUser(user)}
+                            disabled
+                          >
+                            <EditIcon />
+                          </IconButton>
+
+                          <IconButton
+                            size="small"
+                            onClick={(e) => {
+                              setConfirmModalOpen(true);
+                              setDeletingUser(user);
+                            }}
+                            disabled
+                          >
+                            <DeleteOutlineIcon />
+                          </IconButton>
+                        </>
+                      )}
+                    />
                   </TableCell>
                 </TableRow>
               ))}

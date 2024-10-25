@@ -1,14 +1,21 @@
-import openSocket from "socket.io-client";
+import { io } from "socket.io-client";
 import { getBackendUrl } from "../config";
 
-function connectToSocket() {
-    const token = localStorage.getItem("token");
-    return openSocket(getBackendUrl(), {
-      transports: ["websocket", "polling", "flashsocket"],
-      query: {
-        token: JSON.parse(token),
-      },
-    });
-}
+/**
+ *
+ * @param {string} token
+ * @param {number} companyId
+ * @returns {import("socket.io-client").io.Socket}
+ */
+export function connectToSocket(token, companyId) {
+  const url = getBackendUrl();
+  const namespace = companyId ? `/companies-${companyId}` : ``;
+  console.log("Connecting to: ", { url, namespace });
 
-export default connectToSocket;
+  return io(url + namespace, {
+    transports: ["websocket", "polling", "flashsocket"],
+    query: {
+      token: token ? JSON.parse(token) : token,
+    },
+  });
+}

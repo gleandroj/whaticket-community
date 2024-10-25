@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useReducer, useRef } from "react";
 
 import { isSameDay, parseISO, format } from "date-fns";
-import openSocket from "../../services/socket-io";
 import clsx from "clsx";
 
 import { green } from "@material-ui/core/colors";
@@ -31,6 +30,7 @@ import whatsBackground from "../../assets/wa-background.png";
 import api from "../../services/api";
 import toastError from "../../errors/toastError";
 import Audio from "../Audio";
+import useSocketIO from "../../context/SocketIO/useSocketIO";
 
 const useStyles = makeStyles((theme) => ({
   messagesListWrapper: {
@@ -320,6 +320,7 @@ const MessagesList = ({ ticketId, isGroup }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const messageOptionsMenuOpen = Boolean(anchorEl);
   const currentTicketId = useRef(ticketId);
+  const { connectToSocket } = useSocketIO();
 
   useEffect(() => {
     dispatch({ type: "RESET" });
@@ -359,11 +360,14 @@ const MessagesList = ({ ticketId, isGroup }) => {
   }, [pageNumber, ticketId]);
 
   useEffect(() => {
-    const socket = openSocket();
+    const socket = connectToSocket();
 
-    socket.on("connect", () => socket.emit("joinChatBox", ticketId));
+    const onConnect = () => {
+      socket.emit("join:room", ["chatBox", ticketId]);
+    };
 
-    socket.on("appMessage", (data) => {
+    const onChatBoxMessage = (data) => {
+      console.log({ data });
       if (data.action === "create") {
         dispatch({ type: "ADD_MESSAGE", payload: data.message });
         scrollToBottom();
@@ -372,10 +376,15 @@ const MessagesList = ({ ticketId, isGroup }) => {
       if (data.action === "update") {
         dispatch({ type: "UPDATE_MESSAGE", payload: data.message });
       }
-    });
+    };
+
+    socket.on("authenticated", onConnect);
+    socket.on("chatBoxMessage", onChatBoxMessage);
 
     return () => {
-      socket.disconnect();
+      socket.emit("leave:room", ["chatBox", ticketId]);
+      socket.off("authenticated", onConnect);
+      socket.off("chatBoxMessage", onChatBoxMessage);
     };
   }, [ticketId]);
 
@@ -416,19 +425,29 @@ const MessagesList = ({ ticketId, isGroup }) => {
   };
 
   const checkMessageMedia = (message) => {
-    if (message.mediaType === "location" && message.body.split('|').length >= 2) {
-      let locationParts = message.body.split('|')
-      let imageLocation = locationParts[0]
-      let linkLocation = locationParts[1]
+    console.log("message", message);
+    if (
+      message.mediaType === "location" &&
+      message.body.split("|").length >= 2
+    ) {
+      let locationParts = message.body.split("|");
+      let imageLocation = locationParts[0];
+      let linkLocation = locationParts[1];
 
-      let descriptionLocation = null
+      let descriptionLocation = null;
 
       if (locationParts.length > 2)
-        descriptionLocation = message.body.split('|')[2]
+        descriptionLocation = message.body.split("|")[2];
+      console.log("locationParts", message);
 
-      return <LocationPreview image={imageLocation} link={linkLocation} description={descriptionLocation} />
-    }
-    else if (message.mediaType === "vcard") {
+      return (
+        <LocationPreview
+          image={imageLocation}
+          link={linkLocation}
+          description={descriptionLocation}
+        />
+      );
+    } else if (message.mediaType === "vcard") {
       //console.log("vcard")
       //console.log(message)
       let array = message.body.split("\n");
@@ -446,12 +465,12 @@ const MessagesList = ({ ticketId, isGroup }) => {
           }
         }
       }
-      return <VcardPreview contact={contact} numbers={obj[0]?.number} />
-    }
-    /*else if (message.mediaType === "multi_vcard") {
+      return <VcardPreview contact={contact} numbers={obj[0]?.number} />;
+    } else if (
+      /*else if (message.mediaType === "multi_vcard") {
       console.log("multi_vcard")
       console.log(message)
-    	
+
       if(message.body !== null && message.body !== "") {
         let newBody = JSON.parse(message.body)
         return (
@@ -465,10 +484,12 @@ const MessagesList = ({ ticketId, isGroup }) => {
         )
       } else return (<></>)
     }*/
-    else if ( /^.*\.(jpe?g|png|gif)?$/i.exec(message.mediaUrl) && message.mediaType === "image") {
+      /^.*\.(jpe?g|png|gif)?$/i.exec(message.mediaUrl) &&
+      message.mediaType === "image"
+    ) {
       return <ModalImageCors imageUrl={message.mediaUrl} />;
     } else if (message.mediaType === "audio") {
-      return <Audio url={message.mediaUrl} />
+      return <Audio url={message.mediaUrl} />;
     } else if (message.mediaType === "video") {
       return (
         <video
@@ -614,9 +635,11 @@ const MessagesList = ({ ticketId, isGroup }) => {
                     {message.contact?.name}
                   </span>
                 )}
-                {(message.mediaUrl || message.mediaType === "location" || message.mediaType === "vcard"
-                  //|| message.mediaType === "multi_vcard" 
-                ) && checkMessageMedia(message)}
+                {(message.mediaUrl ||
+                  message.mediaType === "location" ||
+                  message.mediaType === "vcard") &&
+                  //|| message.mediaType === "multi_vcard"
+                  checkMessageMedia(message)}
                 <div className={classes.textContentItem}>
                   {message.quotedMsg && renderQuotedMessage(message)}
                   <MarkdownWrapper>{message.body}</MarkdownWrapper>
@@ -643,9 +666,11 @@ const MessagesList = ({ ticketId, isGroup }) => {
                 >
                   <ExpandMore />
                 </IconButton>
-                {(message.mediaUrl || message.mediaType === "location" || message.mediaType === "vcard"
-                  //|| message.mediaType === "multi_vcard" 
-                ) && checkMessageMedia(message)}
+                {(message.mediaUrl ||
+                  message.mediaType === "location" ||
+                  message.mediaType === "vcard") &&
+                  //|| message.mediaType === "multi_vcard"
+                  checkMessageMedia(message)}
                 <div
                   className={clsx(classes.textContentItem, {
                     [classes.textContentItemDeleted]: message.isDeleted,

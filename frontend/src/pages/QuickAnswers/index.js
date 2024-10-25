@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useReducer } from "react";
-import openSocket from "../../services/socket-io";
-
 import {
   Button,
   IconButton,
+  InputAdornment,
   makeStyles,
   Paper,
   Table,
@@ -11,24 +9,23 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  InputAdornment,
   TextField,
 } from "@material-ui/core";
-import { Edit, DeleteOutline } from "@material-ui/icons";
+import { DeleteOutline, Edit } from "@material-ui/icons";
 import SearchIcon from "@material-ui/icons/Search";
-
+import React, { useEffect, useReducer, useState } from "react";
+import { toast } from "react-toastify";
+import ConfirmationModal from "../../components/ConfirmationModal";
 import MainContainer from "../../components/MainContainer";
 import MainHeader from "../../components/MainHeader";
 import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper";
+import QuickAnswersModal from "../../components/QuickAnswersModal";
+import TableRowSkeleton from "../../components/TableRowSkeleton";
 import Title from "../../components/Title";
-
+import toastError from "../../errors/toastError";
 import api from "../../services/api";
 import { i18n } from "../../translate/i18n";
-import TableRowSkeleton from "../../components/TableRowSkeleton";
-import QuickAnswersModal from "../../components/QuickAnswersModal";
-import ConfirmationModal from "../../components/ConfirmationModal";
-import { toast } from "react-toastify";
-import toastError from "../../errors/toastError";
+import { useSocketIO } from "../../context/SocketIO";
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_QUICK_ANSWERS") {
@@ -86,6 +83,8 @@ const useStyles = makeStyles((theme) => ({
 const QuickAnswers = () => {
   const classes = useStyles();
 
+  const { connectToSocket } = useSocketIO();
+
   const [loading, setLoading] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
   const [searchParam, setSearchParam] = useState("");
@@ -122,9 +121,9 @@ const QuickAnswers = () => {
   }, [searchParam, pageNumber]);
 
   useEffect(() => {
-    const socket = openSocket();
+    const socket = connectToSocket();
 
-    socket.on("quickAnswer", (data) => {
+    const onQuickAnswer = (data) => {
       if (data.action === "update" || data.action === "create") {
         dispatch({ type: "UPDATE_QUICK_ANSWERS", payload: data.quickAnswer });
       }
@@ -135,10 +134,12 @@ const QuickAnswers = () => {
           payload: +data.quickAnswerId,
         });
       }
-    });
+    };
+
+    socket.on("quickAnswer", onQuickAnswer);
 
     return () => {
-      socket.disconnect();
+      socket.off("quickAnswer", onQuickAnswer);
     };
   }, []);
 

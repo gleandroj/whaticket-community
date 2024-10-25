@@ -12,6 +12,11 @@ module.exports = {
         type: DataTypes.TEXT,
         allowNull: false
       },
+      companyId: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false
+      },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false

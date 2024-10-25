@@ -41,15 +41,15 @@ const messages = {
         },
         messages: {
           inAttendance: {
-            title: "In Service"
+            title: "In Service",
           },
           waiting: {
-            title: "Waiting"
+            title: "Waiting",
           },
           closed: {
-            title: "Closed"
-          }
-        }
+            title: "Closed",
+          },
+        },
       },
       connections: {
         title: "Connections",
@@ -107,6 +107,7 @@ const messages = {
         form: {
           name: "Name",
           default: "Default",
+          farewellMessage: "Farewell message",
         },
         buttons: {
           okAdd: "Add",
@@ -207,6 +208,7 @@ const messages = {
           password: "Password",
           profile: "Profile",
           whatsapp: "Default Connection",
+          company: "Company",
         },
         buttons: {
           okAdd: "Add",
@@ -344,6 +346,7 @@ const messages = {
           name: "Name",
           email: "Email",
           profile: "Profile",
+          company: "Company",
           whatsapp: "Default Connection",
           actions: "Actions",
         },
@@ -384,7 +387,8 @@ const messages = {
         },
       },
       messagesInput: {
-        placeholderOpen: "Type a message or press ''/'' to use the registered quick responses",
+        placeholderOpen:
+          "Type a message or press ''/'' to use the registered quick responses",
         placeholderClosed: "Reopen or accept this ticket to send a message.",
         signMessage: "Sign",
       },
@@ -458,6 +462,17 @@ const messages = {
           "This color is already in use, pick another one.",
         ERR_WAPP_GREETING_REQUIRED:
           "Greeting message is required if there is more than one queue.",
+        ERR_QUEUE_NAME_ALREADY_EXISTS:
+          "This name is already in use, pick another one.",
+      },
+      userCompanySwitch: {
+        noCompanies: "No companies found.",
+      },
+      companies: {
+        toasts: {
+          deleted: "Company deleted successfully.",
+          success: "Company saved successfully.",
+        },
       },
     },
   },

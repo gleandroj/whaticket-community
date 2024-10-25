@@ -1,0 +1,23 @@
+version: "3.7"
+services:
+  chrome:
+    image: browserless/chrome:latest
+    ports:
+      - "3004:3000"
+    environment:
+      - MAX_CONCURRENT_SESSIONS=${MAX_CONCURRENT_SESSIONS:-1}
+  db:
+    image: postgres:13.8-alpine3.16
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+volumes:
+  db:

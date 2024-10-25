@@ -1,27 +1,39 @@
+import { compare, hash } from "bcryptjs";
 import {
-  Table,
-  Column,
-  CreatedAt,
-  UpdatedAt,
-  Model,
-  DataType,
+  AutoIncrement,
   BeforeCreate,
   BeforeUpdate,
-  PrimaryKey,
-  AutoIncrement,
-  Default,
-  HasMany,
+  BelongsTo,
   BelongsToMany,
+  Column,
+  CreatedAt,
+  DataType,
   ForeignKey,
-  BelongsTo
+  HasMany,
+  Model,
+  PrimaryKey,
+  Scopes,
+  Table,
+  UpdatedAt
 } from "sequelize-typescript";
-import { hash, compare } from "bcryptjs";
-import Ticket from "./Ticket";
+import Company from "./Company";
 import Queue from "./Queue";
+import Ticket from "./Ticket";
+import UserCompany from "./UserCompany";
 import UserQueue from "./UserQueue";
 import Whatsapp from "./Whatsapp";
 
 @Table
+@Scopes(() => ({
+  companyId: (companyId: number) => ({
+    include: [
+      {
+        model: Company,
+        where: { id: companyId }
+      }
+    ]
+  })
+}))
 class User extends Model<User> {
   @PrimaryKey
   @AutoIncrement
@@ -40,20 +52,18 @@ class User extends Model<User> {
   @Column
   passwordHash: string;
 
-  @Default(0)
   @Column
-  tokenVersion: number;
+  tokenVersion: number; // Propriedade adicionada
 
-  @Default("admin")
   @Column
-  profile: string;
+  profile: string; // Propriedade adicionada
 
   @ForeignKey(() => Whatsapp)
-  @Column
-  whatsappId: number;
+  @Column({ type: DataType.INTEGER, allowNull: true }) // Definindo o tipo explicitamente
+  whatsappId: number | null; // Permitir que a propriedade seja null
 
   @BelongsTo(() => Whatsapp)
-  whatsapp: Whatsapp;
+  whatsapp: Whatsapp; // Propriedade adicionada
 
   @CreatedAt
   createdAt: Date;
@@ -67,6 +77,9 @@ class User extends Model<User> {
   @BelongsToMany(() => Queue, () => UserQueue)
   queues: Queue[];
 
+  @BelongsToMany(() => Company, () => UserCompany)
+  companies: Array<Company & { UserCompany: UserCompany }>;
+
   @BeforeUpdate
   @BeforeCreate
   static hashPassword = async (instance: User): Promise<void> => {
@@ -77,6 +90,12 @@ class User extends Model<User> {
 
   public checkPassword = async (password: string): Promise<boolean> => {
     return compare(password, this.getDataValue("passwordHash"));
+  };
+
+  public getActiveCompany = ():
+    | (Company & { UserCompany: UserCompany })
+    | undefined => {
+    return this.companies.find(company => company.UserCompany.isActive);
   };
 }
 

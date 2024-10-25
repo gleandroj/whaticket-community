@@ -1,5 +1,2 @@
-.docker/data/
-ssl/
-.env
-.wwebjs_auth
-.idea
+node_modules
+dist

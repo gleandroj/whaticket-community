@@ -1,12 +1,18 @@
 import { Request, Response } from "express";
 import AppError from "../errors/AppError";
-
-import AuthUserService from "../services/UserServices/AuthUserService";
 import { SendRefreshToken } from "../helpers/SendRefreshToken";
+import User from "../models/User";
 import { RefreshTokenService } from "../services/AuthServices/RefreshTokenService";
+import AuthUserService from "../services/UserServices/AuthUserService";
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
   const { email, password } = req.body;
+
+  const user = await User.findOne({ where: { email }, include: ["companies"] });
+
+  if (!user) {
+    throw new AppError("ERR_INVALID_CREDENTIALS", 401);
+  }
 
   const { token, serializedUser, refreshToken } = await AuthUserService({
     email,

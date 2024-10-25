@@ -12,6 +12,7 @@ interface MessageData {
   read?: boolean;
   mediaType?: string;
   mediaUrl?: string;
+  companyId: number;
 }
 interface Request {
   messageData: MessageData;
@@ -29,7 +30,8 @@ const CreateMessageService = async ({
         model: Ticket,
         as: "ticket",
         include: [
-          "contact", "queue",
+          "contact",
+          "queue",
           {
             model: Whatsapp,
             as: "whatsapp",
@@ -49,16 +51,17 @@ const CreateMessageService = async ({
     throw new Error("ERR_CREATING_MESSAGE");
   }
 
-  const io = getIO();
-  io.to(message.ticketId.toString())
-    .to(message.ticket.status)
-    .to("notification")
-    .emit("appMessage", {
-      action: "create",
-      message,
-      ticket: message.ticket,
-      contact: message.ticket.contact
-    });
+  const io = getIO(message.companyId);
+  const payload = {
+    action: "create",
+    message,
+    ticket: message.ticket,
+    contact: message.ticket.contact
+  };
+
+  io.to(`chatBox:${message.ticketId}`).emit("chatBoxMessage", payload);
+  io.to(`tickets:${message.ticket.status}`).emit("ticketMessage", payload);
+  io.to("notification").emit("notificationMessage", payload);
 
   return message;
 };

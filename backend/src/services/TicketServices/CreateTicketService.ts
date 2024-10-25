@@ -9,23 +9,25 @@ interface Request {
   contactId: number;
   status: string;
   userId: number;
-  queueId ?: number;
+  queueId?: number;
+  companyId?: number;
 }
 
 const CreateTicketService = async ({
   contactId,
   status,
   userId,
-  queueId
+  queueId,
+  companyId
 }: Request): Promise<Ticket> => {
-  const defaultWhatsapp = await GetDefaultWhatsApp(userId);
+  const defaultWhatsapp = await GetDefaultWhatsApp(userId, companyId);
 
   await CheckContactOpenTickets(contactId, defaultWhatsapp.id);
 
   const { isGroup } = await ShowContactService(contactId);
 
-  if(queueId === undefined) {
-    const user = await User.findByPk(userId, { include: ["queues"]});
+  if (queueId === undefined) {
+    const user = await User.findByPk(userId, { include: ["queues"] });
     queueId = user?.queues.length === 1 ? user.queues[0].id : undefined;
   }
 
@@ -34,7 +36,8 @@ const CreateTicketService = async ({
     status,
     isGroup,
     userId,
-    queueId
+    queueId,
+    companyId
   });
 
   const ticket = await Ticket.findByPk(id, { include: ["contact"] });

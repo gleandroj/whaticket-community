@@ -27,7 +27,8 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
 
   const { count, messages, ticket, hasMore } = await ListMessagesService({
     pageNumber,
-    ticketId
+    ticketId,
+    companyId: req.user.companyId
   });
 
   SetTicketMessagesAsRead(ticket);
@@ -65,8 +66,8 @@ export const remove = async (
 
   const message = await DeleteWhatsAppMessage(messageId);
 
-  const io = getIO();
-  io.to(message.ticketId.toString()).emit("appMessage", {
+  const io = getIO(req.user.companyId);
+  io.to(`chatBox:${message.ticketId}`).emit("chatBoxMessage", {
     action: "update",
     message
   });

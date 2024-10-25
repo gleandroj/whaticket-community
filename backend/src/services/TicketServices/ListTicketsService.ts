@@ -17,6 +17,7 @@ interface Request {
   userId: string;
   withUnreadMessages?: string;
   queueIds: number[];
+  companyId?: number; 
 }
 
 interface Response {
@@ -33,12 +34,14 @@ const ListTicketsService = async ({
   date,
   showAll,
   userId,
-  withUnreadMessages
+  withUnreadMessages,
+  companyId // Incluindo companyId como parâmetro
 }: Request): Promise<Response> => {
   let whereCondition: Filterable["where"] = {
     [Op.or]: [{ userId }, { status: "pending" }],
     queueId: { [Op.or]: [queueIds, null] }
   };
+
   let includeCondition: Includeable[];
 
   includeCondition = [
@@ -135,7 +138,9 @@ const ListTicketsService = async ({
   const limit = 40;
   const offset = limit * (+pageNumber - 1);
 
-  const { count, rows: tickets } = await Ticket.findAndCountAll({
+  const { count, rows: tickets } = await Ticket.scope([
+    { method: ["companyId", companyId] }
+  ]).findAndCountAll({
     where: whereCondition,
     include: includeCondition,
     distinct: true,
