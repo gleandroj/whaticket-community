@@ -72,6 +72,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   });
 
   const io = getIO(req.user.companyId);
+
   io.to(`tickets:${ticket.status}`).emit("ticket", {
     action: "update",
     ticket

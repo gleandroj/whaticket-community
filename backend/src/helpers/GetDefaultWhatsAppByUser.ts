@@ -8,17 +8,17 @@ const GetDefaultWhatsAppByUser = async (
 ): Promise<Whatsapp | null> => {
   if (userId) {
     const user = await User.findByPk(userId, { include: ["whatsapp"] });
-    if (user === null) {
+
+    if (user === null && !companyId) {
       return null;
     }
 
-    if (user.whatsapp !== null) {
+    if (user && user.whatsapp) {
       logger.info(
         `Found whatsapp linked to user '${user.name}' is '${user.whatsapp.name}'.`
       );
+      return user.whatsapp;
     }
-
-    return user.whatsapp;
   }
 
   if (companyId) {
@@ -27,7 +27,7 @@ const GetDefaultWhatsAppByUser = async (
     });
 
     if (defaultWhatsapp) {
-      logger.info(`Found default whatsapp for company #${companyId}.`);
+      logger.info(`Found default whatsapp linked to company #${companyId}.`);
       return defaultWhatsapp;
     }
   }

@@ -20,7 +20,7 @@ const CreateTicketService = async ({
   queueId,
   companyId
 }: Request): Promise<Ticket> => {
-  const defaultWhatsapp = await GetDefaultWhatsApp(userId);
+  const defaultWhatsapp = await GetDefaultWhatsApp(userId, companyId);
 
   await CheckContactOpenTickets(contactId, defaultWhatsapp.id);
 

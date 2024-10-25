@@ -155,6 +155,7 @@ const CompanyModal = ({ open, onClose, companyId }) => {
                     }}
                     inputProps={{
                       mask: "##.###.###/####-##",
+                      shrink: true,
                     }}
                   />
 

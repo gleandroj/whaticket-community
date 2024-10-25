@@ -454,7 +454,7 @@ const handleMsgAck = async (msg: WbotMessage, ack: MessageAck) => {
     await messageToUpdate.update({ ack });
 
     const io = getIO(messageToUpdate.companyId);
-    io.to(`chatBox:${messageToUpdate.ticketId}`).emit("appMessage", {
+    io.to(`chatBox:${messageToUpdate.ticketId}`).emit("chatBoxMessage", {
       action: "update",
       message: messageToUpdate
     });

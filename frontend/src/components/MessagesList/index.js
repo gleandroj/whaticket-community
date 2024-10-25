@@ -425,6 +425,7 @@ const MessagesList = ({ ticketId, isGroup }) => {
   };
 
   const checkMessageMedia = (message) => {
+    console.log("message", message);
     if (
       message.mediaType === "location" &&
       message.body.split("|").length >= 2
@@ -437,6 +438,7 @@ const MessagesList = ({ ticketId, isGroup }) => {
 
       if (locationParts.length > 2)
         descriptionLocation = message.body.split("|")[2];
+      console.log("locationParts", message);
 
       return (
         <LocationPreview
