@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Switch } from "react-router-dom";
+import { HashRouter, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { AuthProvider } from "../context/Auth/AuthContext";
 import { SocketIOProvider } from "../context/SocketIO/SocketIOContext";
@@ -20,7 +20,7 @@ import Route from "./Route";
 
 const Routes = () => {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <SocketIOProvider>
         <AuthProvider>
           <Switch>
@@ -64,7 +64,7 @@ const Routes = () => {
           <ToastContainer autoClose={3000} />
         </AuthProvider>
       </SocketIOProvider>
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 
