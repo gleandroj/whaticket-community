@@ -1,19 +1,12 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { connectToSocket } from "../../services/socket-io";
-
 import { toast } from "react-toastify";
-
-import { i18n } from "../../translate/i18n";
-import api from "../../services/api";
+import { useSocketIO } from "../../context/SocketIO/useSocketIO";
 import toastError from "../../errors/toastError";
+import api from "../../services/api";
+import { i18n } from "../../translate/i18n";
 
-const useAuth = () => {
-  const history = useHistory();
-  const [isAuth, setIsAuth] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState({});
-
+const initializeInterceptors = (setIsAuth) => {
   api.interceptors.request.use(
     (config) => {
       const token = localStorage.getItem("token");
@@ -52,8 +45,17 @@ const useAuth = () => {
       return Promise.reject(error);
     }
   );
+};
+
+const useAuth = () => {
+  const history = useHistory();
+  const [isAuth, setIsAuth] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState({});
+  const { connectToSocket, disconnect } = useSocketIO();
 
   useEffect(() => {
+    initializeInterceptors(setIsAuth);
     const token = localStorage.getItem("token");
     (async () => {
       if (token) {
@@ -72,13 +74,11 @@ const useAuth = () => {
 
   useEffect(() => {
     const socket = connectToSocket();
-
     socket.on("user", (data) => {
       if (data.action === "update" && data.user.id === user.id) {
         setUser(data.user);
       }
     });
-
     return () => {
       socket.disconnect();
     };

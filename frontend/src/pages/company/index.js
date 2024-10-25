@@ -1,41 +1,37 @@
-import React, {
-  useState,
-  useEffect,
-  useReducer,
-  useContext,
-  useMemo,
-} from "react";
-import { toast } from "react-toastify";
-import { connectToSocket } from "../../services/socket-io";
-
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import Paper from "@material-ui/core/Paper";
+import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import IconButton from "@material-ui/core/IconButton";
-import SearchIcon from "@material-ui/icons/Search";
 import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
-
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import EditIcon from "@material-ui/icons/Edit";
-
+import SearchIcon from "@material-ui/icons/Search";
+import React, {
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
+import { toast } from "react-toastify";
+import CompanyModal from "../../components/CompanyModal";
+import ConfirmationModal from "../../components/ConfirmationModal";
 import MainContainer from "../../components/MainContainer";
 import MainHeader from "../../components/MainHeader";
 import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper";
+import TableRowSkeleton from "../../components/TableRowSkeleton";
 import Title from "../../components/Title";
-
+import { AuthContext } from "../../context/Auth/AuthContext";
+import { useSocketIO } from "\.\./\.\./context/SocketIO";
+import toastError from "../../errors/toastError";
 import api from "../../services/api";
 import { i18n } from "../../translate/i18n";
-import TableRowSkeleton from "../../components/TableRowSkeleton";
-import CompanyModal from "../../components/CompanyModal"; // Assumindo que você terá um modal para empresas
-import ConfirmationModal from "../../components/ConfirmationModal";
-import toastError from "../../errors/toastError";
-import { AuthContext } from "../../context/Auth/AuthContext";
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_COMPANIES") {
@@ -103,6 +99,7 @@ const Companies = () => {
   const [searchParam, setSearchParam] = useState("");
   const [companies, dispatch] = useReducer(reducer, []);
   const { user } = useContext(AuthContext);
+  const { connectToSocket } = useSocketIO();
 
   useEffect(() => {
     dispatch({ type: "RESET" });

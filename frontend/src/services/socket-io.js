@@ -4,6 +4,7 @@ import { getBackendUrl } from "../config";
 let socketInstance = null;
 
 export function connectToSocket() {
+  debugger;
   if (!socketInstance) {
     const token = localStorage.getItem("token");
     console.log("backend-url", getBackendUrl());

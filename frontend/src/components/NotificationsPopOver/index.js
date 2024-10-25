@@ -1,24 +1,21 @@
-import React, { useState, useRef, useEffect, useContext } from "react";
-
-import { useHistory } from "react-router-dom";
-import { format } from "date-fns";
-import { connectToSocket } from "../../services/socket-io";
-import useSound from "use-sound";
-
-import Popover from "@material-ui/core/Popover";
+import Badge from "@material-ui/core/Badge";
 import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
+import Popover from "@material-ui/core/Popover";
 import { makeStyles } from "@material-ui/core/styles";
-import Badge from "@material-ui/core/Badge";
 import ChatIcon from "@material-ui/icons/Chat";
-
-import TicketListItem from "../TicketListItem";
-import { i18n } from "../../translate/i18n";
-import useTickets from "../../hooks/useTickets";
+import { format } from "date-fns";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { useHistory } from "react-router-dom";
+import useSound from "use-sound";
 import alertSound from "../../assets/sound.mp3";
 import { AuthContext } from "../../context/Auth/AuthContext";
+import useTickets from "../../hooks/useTickets";
+import { i18n } from "../../translate/i18n";
+import TicketListItem from "../TicketListItem";
+import useSocketIO from "../../context/SocketIO/useSocketIO";
 
 const useStyles = makeStyles((theme) => ({
   tabContainer: {
@@ -50,6 +47,7 @@ const NotificationsPopOver = () => {
   const anchorEl = useRef();
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const { connectToSocket } = useSocketIO();
 
   const [, setDesktopNotifications] = useState([]);
 

@@ -1,8 +1,7 @@
 import { useEffect, useReducer, useState } from "react";
 import toastError from "../../errors/toastError";
-import { connectToSocket } from "../../services/socket-io";
-
 import api from "../../services/api";
+import { useSocketIO } from "../../context/SocketIO";
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_COMPANIES") {
@@ -39,6 +38,7 @@ const reducer = (state, action) => {
 const useCompanies = () => {
   const [companies, dispatch] = useReducer(reducer, []);
   const [loading, setLoading] = useState(true);
+  const { connectToSocket } = useSocketIO();
 
   useEffect(() => {
     setLoading(true);

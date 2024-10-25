@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import QRCode from "qrcode.react";
-import { connectToSocket } from "../../services/socket-io";
 import toastError from "../../errors/toastError";
-
 import { Dialog, DialogContent, Paper, Typography } from "@material-ui/core";
 import { i18n } from "../../translate/i18n";
 import api from "../../services/api";
+import { useSocketIO } from "../../context/SocketIO";
 
 const QrcodeModal = ({ open, onClose, whatsAppId }) => {
   const [qrCode, setQrCode] = useState("");
+  const { connectToSocket } = useSocketIO();
 
   useEffect(() => {
     const fetchSession = async () => {

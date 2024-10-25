@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { connectToSocket } from "../../services/socket-io";
-
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
+import Paper from "@material-ui/core/Paper";
 import Select from "@material-ui/core/Select";
+import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
+import Typography from "@material-ui/core/Typography";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-
+import { useSocketIO } from "../../context/SocketIO";
+import toastError from "../../errors/toastError";
 import api from "../../services/api";
 import { i18n } from "../../translate/i18n.js";
-import toastError from "../../errors/toastError";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Settings = () => {
   const classes = useStyles();
-
+  const { connectToSocket } = useSocketIO();
   const [settings, setSettings] = useState([]);
 
   useEffect(() => {

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useReducer, useRef } from "react";
 
 import { isSameDay, parseISO, format } from "date-fns";
-import { connectToSocket } from "../../services/socket-io";
 import clsx from "clsx";
 
 import { green } from "@material-ui/core/colors";
@@ -31,6 +30,7 @@ import whatsBackground from "../../assets/wa-background.png";
 import api from "../../services/api";
 import toastError from "../../errors/toastError";
 import Audio from "../Audio";
+import useSocketIO from "../../context/SocketIO/useSocketIO";
 
 const useStyles = makeStyles((theme) => ({
   messagesListWrapper: {
@@ -320,6 +320,7 @@ const MessagesList = ({ ticketId, isGroup }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const messageOptionsMenuOpen = Boolean(anchorEl);
   const currentTicketId = useRef(ticketId);
+  const { connectToSocket } = useSocketIO();
 
   useEffect(() => {
     dispatch({ type: "RESET" });
@@ -456,7 +457,7 @@ const MessagesList = ({ ticketId, isGroup }) => {
       }
       return <VcardPreview contact={contact} numbers={obj[0]?.number} />;
     } else if (
-    /*else if (message.mediaType === "multi_vcard") {
+      /*else if (message.mediaType === "multi_vcard") {
       console.log("multi_vcard")
       console.log(message)
 

@@ -1,16 +1,13 @@
-import React, { useState, useEffect, useReducer, useContext } from "react";
-import { connectToSocket } from "../../services/socket-io";
-
-import { makeStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import Paper from "@material-ui/core/Paper";
-
-import TicketListItem from "../TicketListItem";
-import TicketsListSkeleton from "../TicketsListSkeleton";
-
+import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext, useEffect, useReducer, useState } from "react";
+import { AuthContext } from "../../context/Auth/AuthContext";
+import { useSocketIO } from "\.\./\.\./context/SocketIO";
 import useTickets from "../../hooks/useTickets";
 import { i18n } from "../../translate/i18n";
-import { AuthContext } from "../../context/Auth/AuthContext";
+import TicketListItem from "../TicketListItem";
+import TicketsListSkeleton from "../TicketsListSkeleton";
 
 const useStyles = makeStyles((theme) => ({
   ticketsListWrapper: {
@@ -159,6 +156,7 @@ const TicketsList = (props) => {
   const [pageNumber, setPageNumber] = useState(1);
   const [ticketsList, dispatch] = useReducer(reducer, []);
   const { user } = useContext(AuthContext);
+  const { connectToSocket } = useSocketIO();
 
   useEffect(() => {
     dispatch({ type: "RESET" });

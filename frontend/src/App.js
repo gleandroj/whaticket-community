@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
-import Routes from "./routes";
-import "react-toastify/dist/ReactToastify.css";
-
-import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 import { ptBR } from "@material-ui/core/locale";
+import { createTheme, ThemeProvider } from "@material-ui/core/styles";
+import React, { useEffect, useState } from "react";
+import "react-toastify/dist/ReactToastify.css";
+import Routes from "./routes";
 
 const App = () => {
   const [locale, setLocale] = useState();
@@ -42,7 +41,6 @@ const App = () => {
       <Routes />
     </ThemeProvider>
   );
-  
 };
 
 export default App;

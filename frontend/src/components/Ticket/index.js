@@ -1,21 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useHistory } from "react-router-dom";
-
-import { toast } from "react-toastify";
-import { connectToSocket } from "../../services/socket-io";
-import clsx from "clsx";
-
 import { Paper, makeStyles } from "@material-ui/core";
-
+import clsx from "clsx";
+import React, { useEffect, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { ReplyMessageProvider } from "../../context/ReplyingMessage/ReplyingMessageContext";
+import { useSocketIO } from "\.\./\.\./context/SocketIO";
+import toastError from "../../errors/toastError";
+import api from "../../services/api";
 import ContactDrawer from "../ContactDrawer";
 import MessageInput from "../MessageInput/";
+import MessagesList from "../MessagesList";
+import TicketActionButtons from "../TicketActionButtons";
 import TicketHeader from "../TicketHeader";
 import TicketInfo from "../TicketInfo";
-import TicketActionButtons from "../TicketActionButtons";
-import MessagesList from "../MessagesList";
-import api from "../../services/api";
-import { ReplyMessageProvider } from "../../context/ReplyingMessage/ReplyingMessageContext";
-import toastError from "../../errors/toastError";
 
 const drawerWidth = 320;
 
@@ -82,6 +79,7 @@ const Ticket = () => {
   const [loading, setLoading] = useState(true);
   const [contact, setContact] = useState({});
   const [ticket, setTicket] = useState({});
+  const { connectToSocket } = useSocketIO();
 
   useEffect(() => {
     setLoading(true);
