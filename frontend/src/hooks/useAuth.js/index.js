@@ -6,7 +6,13 @@ import toastError from "../../errors/toastError";
 import api from "../../services/api";
 import { i18n } from "../../translate/i18n";
 
-const initializeInterceptors = (setIsAuth) => {
+const useAuth = () => {
+  const history = useHistory();
+  const [isAuth, setIsAuth] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState({});
+  const { connectToSocket, disconnect } = useSocketIO();
+
   api.interceptors.request.use(
     (config) => {
       const token = localStorage.getItem("token");
@@ -45,14 +51,6 @@ const initializeInterceptors = (setIsAuth) => {
       return Promise.reject(error);
     }
   );
-};
-
-const useAuth = () => {
-  const history = useHistory();
-  const [isAuth, setIsAuth] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState({});
-  const { connectToSocket, disconnect } = useSocketIO();
 
   useEffect(() => {
     initializeInterceptors(setIsAuth);
