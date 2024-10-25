@@ -130,7 +130,7 @@ const Contacts = () => {
   }, [searchParam, pageNumber]);
 
   useEffect(() => {
-    const socket = { connectToSocket }();
+    const socket = connectToSocket();
 
     socket.on("contact", (data) => {
       if (data.action === "update" || data.action === "create") {

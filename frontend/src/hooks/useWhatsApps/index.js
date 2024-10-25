@@ -73,7 +73,7 @@ const useWhatsApps = () => {
   }, []);
 
   useEffect(() => {
-    const socket = { connectToSocket }();
+    const socket = connectToSocket();
 
     socket.on("whatsapp", (data) => {
       if (data.action === "update") {

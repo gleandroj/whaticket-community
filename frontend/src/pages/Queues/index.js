@@ -111,7 +111,7 @@ const Queues = () => {
   }, []);
 
   useEffect(() => {
-    const socket = { connectToSocket }();
+    const socket = connectToSocket();
 
     socket.on("queue", (data) => {
       if (data.action === "update" || data.action === "create") {

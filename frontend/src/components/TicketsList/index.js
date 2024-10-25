@@ -182,7 +182,7 @@ const TicketsList = (props) => {
   }, [tickets]);
 
   useEffect(() => {
-    const socket = { connectToSocket }();
+    const socket = connectToSocket();
 
     const shouldUpdateTicket = (ticket) =>
       !searchParam &&

@@ -130,7 +130,7 @@ const Companies = () => {
   }, [searchParam, pageNumber]);
 
   useEffect(() => {
-    const socket = { connectToSocket }();
+    const socket = connectToSocket();
 
     socket.on("company", (data) => {
       console.log("company", data);

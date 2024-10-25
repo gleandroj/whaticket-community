@@ -53,7 +53,7 @@ const Settings = () => {
   }, []);
 
   useEffect(() => {
-    const socket = { connectToSocket }();
+    const socket = connectToSocket();
 
     socket.on("settings", (data) => {
       if (data.action === "update") {

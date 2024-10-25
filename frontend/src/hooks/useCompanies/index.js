@@ -56,7 +56,7 @@ const useCompanies = () => {
   }, []);
 
   useEffect(() => {
-    const socket = { connectToSocket }();
+    const socket = connectToSocket();
 
     socket.on("company", (data) => {
       if (data.action === "update") {

@@ -359,7 +359,7 @@ const MessagesList = ({ ticketId, isGroup }) => {
   }, [pageNumber, ticketId]);
 
   useEffect(() => {
-    const socket = { connectToSocket }();
+    const socket = connectToSocket();
 
     socket.on("connect", () => socket.emit("joinChatBox", ticketId));
 
