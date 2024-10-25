@@ -13,5 +13,11 @@ module.exports = {
   database: process.env.DB_NAME,
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
-  logging: logger.debug.bind(logger)
+  logging: logger.debug.bind(logger),
+  dialectOptions: {
+    ssl:
+      process.env.NODE_ENV === "production"
+        ? { require: true, rejectUnauthorized: false }
+        : {}
+  }
 };
