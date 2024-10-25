@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useReducer, useContext } from "react";
-import openSocket from "../../services/socket-io";
+import { connectToSocket } from "../../services/socket-io";
 import { toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
 
@@ -130,7 +130,7 @@ const Contacts = () => {
   }, [searchParam, pageNumber]);
 
   useEffect(() => {
-    const socket = openSocket();
+    const socket = { connectToSocket }();
 
     socket.on("contact", (data) => {
       if (data.action === "update" || data.action === "create") {

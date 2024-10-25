@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useHistory } from "react-router-dom";
 
 import { toast } from "react-toastify";
-import openSocket from "../../services/socket-io";
+import { connectToSocket } from "../../services/socket-io";
 import clsx from "clsx";
 
 import { Paper, makeStyles } from "@material-ui/core";
@@ -104,7 +104,7 @@ const Ticket = () => {
   }, [ticketId, history]);
 
   useEffect(() => {
-    const socket = openSocket();
+    const socket = { connectToSocket }();
 
     socket.on("connect", () => socket.emit("joinChatBox", ticketId));
 

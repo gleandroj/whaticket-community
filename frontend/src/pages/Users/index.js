@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useReducer, useState } from "react"; // Tu ta importando duas vezes a mesma parada??
 import { toast } from "react-toastify";
-import openSocket from "../../services/socket-io";
+import { connectToSocket } from "../../services/socket-io";
 
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
@@ -125,7 +125,7 @@ const Users = () => {
   }, [searchParam, pageNumber]);
 
   useEffect(() => {
-    const socket = openSocket();
+    const socket = { connectToSocket }();
 
     socket.on("user", (data) => {
       if (data.action === "update" || data.action === "create") {

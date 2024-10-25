@@ -6,7 +6,7 @@ import React, {
   useMemo,
 } from "react";
 import { toast } from "react-toastify";
-import openSocket from "../../services/socket-io";
+import { connectToSocket } from "../../services/socket-io";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
@@ -130,7 +130,7 @@ const Companies = () => {
   }, [searchParam, pageNumber]);
 
   useEffect(() => {
-    const socket = openSocket();
+    const socket = { connectToSocket }();
 
     socket.on("company", (data) => {
       console.log("company", data);
@@ -139,7 +139,7 @@ const Companies = () => {
       }
 
       if (data.action === "delete") {
-        dispatch({ type: "DELETE_COMPANY", payload: +data.companyId });
+        dispatch({ type: "DELETE_COMPANY", payload: +data.id });
       }
     });
 

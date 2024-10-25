@@ -151,7 +151,12 @@ const UserModal = ({ open, onClose, userId }) => {
             : `${i18n.t("userModal.title.add")}`}
         </DialogTitle>
         <Formik
-          initialValues={user}
+          initialValues={{
+            name: user.name,
+            email: user.email,
+            password: user.password,
+            profile: user.profile,
+          }}
           enableReinitialize={true}
           validationSchema={UserSchema}
           onSubmit={(values, actions) => {
@@ -327,7 +332,6 @@ const UserModal = ({ open, onClose, userId }) => {
                           onChange={(e) => setWhatsappId(e.target.value)}
                           label={i18n.t("userModal.form.whatsapp")}
                         >
-                          <MenuItem value={""}>&nbsp;</MenuItem>
                           {whatsApps.map((whatsapp) => (
                             <MenuItem key={whatsapp.id} value={whatsapp.id}>
                               {whatsapp.name}

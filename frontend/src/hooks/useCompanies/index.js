@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useState } from "react";
 import toastError from "../../errors/toastError";
-import openSocket from "../../services/socket-io";
+import { connectToSocket } from "../../services/socket-io";
 
 import api from "../../services/api";
 
@@ -56,7 +56,7 @@ const useCompanies = () => {
   }, []);
 
   useEffect(() => {
-    const socket = openSocket();
+    const socket = { connectToSocket }();
 
     socket.on("company", (data) => {
       if (data.action === "update") {
