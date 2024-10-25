@@ -1,1 +1,1 @@
-web: node backend/dist/server.js
+web: ./backend/node_modules/.bin/sequelize db:migrate && ./backend/node_modules/.bin/sequelize db:seed:all && node backend/dist/server.js
