@@ -462,6 +462,15 @@ const messages = {
         ERR_WAPP_GREETING_REQUIRED:
           "Greeting message is required if there is more than one queue.",
       },
+      userCompanySwitch: {
+        noCompanies: "No companies found.",
+      },
+      companies: {
+        toasts: {
+          deleted: "Company deleted successfully.",
+          success: "Company saved successfully.",
+        },
+      },
     },
   },
 };

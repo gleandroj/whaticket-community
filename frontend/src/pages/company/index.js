@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, {
+  useState,
+  useEffect,
+  useReducer,
+  useContext,
+  useMemo,
+} from "react";
 import { toast } from "react-toastify";
 import openSocket from "../../services/socket-io";
 
@@ -29,6 +35,7 @@ import TableRowSkeleton from "../../components/TableRowSkeleton";
 import CompanyModal from "../../components/CompanyModal"; // Assumindo que você terá um modal para empresas
 import ConfirmationModal from "../../components/ConfirmationModal";
 import toastError from "../../errors/toastError";
+import { AuthContext } from "../../context/Auth/AuthContext";
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_COMPANIES") {
@@ -95,6 +102,7 @@ const Companies = () => {
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [searchParam, setSearchParam] = useState("");
   const [companies, dispatch] = useReducer(reducer, []);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     dispatch({ type: "RESET" });
@@ -125,6 +133,7 @@ const Companies = () => {
     const socket = openSocket();
 
     socket.on("company", (data) => {
+      console.log("company", data);
       if (data.action === "update" || data.action === "create") {
         dispatch({ type: "UPDATE_COMPANY", payload: data.company });
       }
@@ -181,6 +190,14 @@ const Companies = () => {
       loadMore();
     }
   };
+
+  const activeCompanyId = useMemo(() => {
+    const companies = user?.companies || [];
+    const activeUserCompany = companies
+      .flatMap((company) => company.UserCompany)
+      .find((u) => u.isActive);
+    return activeUserCompany?.companyId;
+  }, [user?.companies]);
 
   return (
     <MainContainer>
@@ -247,7 +264,7 @@ const Companies = () => {
                   <TableCell align="center">{company.name}</TableCell>
                   <TableCell align="center">{company.cnpj}</TableCell>
                   <TableCell align="center">{company.email}</TableCell>
-                  
+
                   <TableCell align="center">
                     <IconButton
                       size="small"
@@ -258,6 +275,7 @@ const Companies = () => {
 
                     <IconButton
                       size="small"
+                      disabled={activeCompanyId === company.id}
                       onClick={(e) => {
                         setConfirmModalOpen(true);
                         setDeletingCompany(company);

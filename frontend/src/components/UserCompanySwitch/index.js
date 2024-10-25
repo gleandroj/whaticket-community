@@ -1,21 +1,10 @@
-import React, { useState, useContext, useEffect } from "react";
-import {
-  makeStyles,
-  Drawer,
-  AppBar,
-  Toolbar,
-  List,
-  Typography,
-  Divider,
-  MenuItem,
-  Button,
-  Menu,
-} from "@material-ui/core";
-import MenuIcon from "@material-ui/icons/Menu";
+import { Button, Menu, MenuItem } from "@material-ui/core";
 import BusinessIcon from "@material-ui/icons/Business";
 import ExpandMore from "@material-ui/icons/ExpandMore";
-import api from "../../services/api";
+import React, { useState } from "react";
 import toastError from "../../errors/toastError";
+import api from "../../services/api";
+import { i18n } from "../../translate/i18n";
 
 const UserCompanySwitch = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -56,18 +45,22 @@ const UserCompanySwitch = () => {
     }
   }, []);
 
+  const disableCompaniesSwitch = companies.length <= 1;
+
   return (
     <div>
       <Button
         aria-label="companies of current user"
         aria-controls="menu-company"
         aria-haspopup="true"
-        variant="contained"
+        variant={disableCompaniesSwitch ? "text" : "contained"}
         color="primary"
+        disableRipple
         disableElevation
-        onClick={handleMenu}
-        endIcon={<ExpandMore />}
+        onClick={disableCompaniesSwitch ? null : handleMenu}
+        endIcon={!disableCompaniesSwitch ? <ExpandMore /> : null}
         startIcon={<BusinessIcon />}
+        style={disableCompaniesSwitch ? { cursor: "default" } : {}}
       >
         {selectedCompany?.name || "Loading"}
       </Button>
@@ -96,6 +89,11 @@ const UserCompanySwitch = () => {
               {company.name}
             </MenuItem>
           ))}
+        {disableCompaniesSwitch && (
+          <MenuItem disabled>
+            {i18n.t("userCompanySwitch.noCompanies")}
+          </MenuItem>
+        )}
       </Menu>
     </div>
   );

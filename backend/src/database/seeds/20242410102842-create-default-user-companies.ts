@@ -7,7 +7,7 @@ module.exports = {
       [
         {
           userId: 1,
-          companyId:1,
+          companyId: 1,
           isActive: true,
           createdAt: new Date(),
           updatedAt: new Date()

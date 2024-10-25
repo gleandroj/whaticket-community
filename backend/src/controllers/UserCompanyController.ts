@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import ShowUserService from "../services/UserServices/ShowUserService";
 
-//Troca de compania
 export const switchUserCompany = async (req: Request, res: Response) => {
   try {
     const userId = req.user.id!;
@@ -35,7 +34,6 @@ export const switchUserCompany = async (req: Request, res: Response) => {
 };
 
 export const listUserComapany = async (req: Request, res: Response) => {
-  //Popular o comboexport const listUserCompany = async (req: Request, res: Response) => {
   try {
     const userId = req.user.id!;
     // Busca o usuário logado e suas companhias

@@ -76,14 +76,20 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 
   try {
     await schema.validate(newContact);
-  } catch (err) {
+  } catch (err: Error | any) {
     throw new AppError(err.message);
   }
 
-  await CheckIsValidContact(newContact.number);
-  const validNumber: any = await CheckContactNumber(newContact.number);
+  await CheckIsValidContact(newContact.number, req.user.companyId!);
+  const validNumber: any = await CheckContactNumber(
+    newContact.number,
+    req.user.companyId!
+  );
 
-  const profilePicUrl = await GetProfilePicUrl(validNumber);
+  const profilePicUrl = await GetProfilePicUrl(
+    validNumber,
+    req.user.companyId!
+  );
 
   const { name } = newContact;
   const number = validNumber;
@@ -132,11 +138,11 @@ export const update = async (
 
   try {
     await schema.validate(contactData);
-  } catch (err) {
+  } catch (err: Error | any) {
     throw new AppError(err.message);
   }
 
-  await CheckIsValidContact(contactData.number);
+  await CheckIsValidContact(contactData.number, req.user.companyId!);
 
   const { contactId } = req.params;
 

@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useReducer } from "react"; // Tu ta importando duas vezes a mesma parada??
+import React, { useContext, useEffect, useReducer, useState } from "react"; // Tu ta importando duas vezes a mesma parada??
 import { toast } from "react-toastify";
 import openSocket from "../../services/socket-io";
 
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import Paper from "@material-ui/core/Paper";
+import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import IconButton from "@material-ui/core/IconButton";
-import SearchIcon from "@material-ui/icons/Search";
 import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
+import SearchIcon from "@material-ui/icons/Search";
 
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import EditIcon from "@material-ui/icons/Edit";
@@ -23,12 +23,14 @@ import MainHeader from "../../components/MainHeader";
 import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper";
 import Title from "../../components/Title";
 
-import api from "../../services/api";
-import { i18n } from "../../translate/i18n";
+import { Can } from "../../components/Can";
+import ConfirmationModal from "../../components/ConfirmationModal";
 import TableRowSkeleton from "../../components/TableRowSkeleton";
 import UserModal from "../../components/UserModal";
-import ConfirmationModal from "../../components/ConfirmationModal";
+import { AuthContext } from "../../context/Auth/AuthContext";
 import toastError from "../../errors/toastError";
+import api from "../../services/api";
+import { i18n } from "../../translate/i18n";
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_USERS") {
@@ -95,6 +97,7 @@ const Users = () => {
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [searchParam, setSearchParam] = useState("");
   const [users, dispatch] = useReducer(reducer, []);
+  const { user: currentUser } = useContext(AuthContext);
 
   useEffect(() => {
     dispatch({ type: "RESET" });
@@ -266,22 +269,52 @@ const Users = () => {
                   <TableCell align="center">{user.profile}</TableCell>
                   <TableCell align="center">{user.whatsapp?.name}</TableCell>
                   <TableCell align="center">
-                    <IconButton
-                      size="small"
-                      onClick={() => handleEditUser(user)}
-                    >
-                      <EditIcon />
-                    </IconButton>
+                    <Can
+                      role={currentUser.profile}
+                      perform={`user-list:edit:${user.profile}`}
+                      yes={() => (
+                        <>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleEditUser(user)}
+                          >
+                            <EditIcon />
+                          </IconButton>
 
-                    <IconButton
-                      size="small"
-                      onClick={(e) => {
-                        setConfirmModalOpen(true);
-                        setDeletingUser(user);
-                      }}
-                    >
-                      <DeleteOutlineIcon />
-                    </IconButton>
+                          <IconButton
+                            size="small"
+                            onClick={(e) => {
+                              setConfirmModalOpen(true);
+                              setDeletingUser(user);
+                            }}
+                          >
+                            <DeleteOutlineIcon />
+                          </IconButton>
+                        </>
+                      )}
+                      no={() => (
+                        <>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleEditUser(user)}
+                            disabled
+                          >
+                            <EditIcon />
+                          </IconButton>
+
+                          <IconButton
+                            size="small"
+                            onClick={(e) => {
+                              setConfirmModalOpen(true);
+                              setDeletingUser(user);
+                            }}
+                            disabled
+                          >
+                            <DeleteOutlineIcon />
+                          </IconButton>
+                        </>
+                      )}
+                    />
                   </TableCell>
                 </TableRow>
               ))}

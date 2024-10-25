@@ -1,32 +1,22 @@
-import React, { useState, useEffect, useContext } from "react";
-import * as Yup from "yup";
-import { Formik, Form, Field } from "formik";
-import { toast } from "react-toastify";
-
 import {
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  CircularProgress,
-  Select,
-  InputLabel,
-  MenuItem,
-  FormControl,
   TextField,
-  InputAdornment,
-  IconButton,
 } from "@material-ui/core";
-
-import { Visibility, VisibilityOff } from "@material-ui/icons";
-import { makeStyles } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
-
-import { i18n } from "../../translate/i18n";
-import api from "../../services/api";
+import { makeStyles } from "@material-ui/core/styles";
+import { Field, Form, Formik } from "formik";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import * as Yup from "yup";
 import toastError from "../../errors/toastError";
-import { AuthContext } from "../../context/Auth/AuthContext";
+import api from "../../services/api";
+import { i18n } from "../../translate/i18n";
+import TextMaskCustom from "../TextMaskCustom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
   },
   multFieldLine: {
     display: "flex",
+    flexDirection: "column",
     "& > *:not(:last-child)": {
       marginRight: theme.spacing(1),
     },
@@ -70,16 +61,12 @@ const CompanySchema = Yup.object().shape({
 
 const CompanyModal = ({ open, onClose, companyId }) => {
   const classes = useStyles();
-
   const initialState = {
     name: "",
     cnpj: "",
     email: "",
   };
-
-  const { user: loggedInUser } = useContext(AuthContext);
   const [company, setCompany] = useState(initialState);
-  const [showCnpj, setShowCnpj] = useState(true);
 
   useEffect(() => {
     const fetchCompany = async () => {
@@ -107,7 +94,7 @@ const CompanyModal = ({ open, onClose, companyId }) => {
       } else {
         await api.post("/companies", values);
       }
-      toast.success(i18n.t("companyModal.success"));
+      toast.success(i18n.t("companies.toasts.success"));
     } catch (err) {
       toastError(err);
     }
@@ -119,7 +106,7 @@ const CompanyModal = ({ open, onClose, companyId }) => {
       <Dialog
         open={open}
         onClose={handleClose}
-        maxWidth="md"
+        maxWidth="xs"
         fullWidth
         scroll="paper"
       >
@@ -163,6 +150,12 @@ const CompanyModal = ({ open, onClose, companyId }) => {
                     variant="outlined"
                     margin="dense"
                     fullWidth
+                    InputProps={{
+                      inputComponent: TextMaskCustom,
+                    }}
+                    inputProps={{
+                      mask: "##.###.###/####-##",
+                    }}
                   />
 
                   <Field

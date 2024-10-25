@@ -26,7 +26,7 @@ export const initIO = (httpServer: Server): SocketIO => {
       return io;
     }
 
-    console.log({ tokenData });
+    // console.log({ tokenData });
 
     logger.info("Client Connected");
 

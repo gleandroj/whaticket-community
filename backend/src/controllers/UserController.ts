@@ -78,7 +78,7 @@ export const update = async (
   const { userId } = req.params;
   const userData = req.body;
 
-  const user = await UpdateUserService({ userData, userId });
+  const user = await UpdateUserService({ userData, userId }, req.user.profile);
 
   const io = getIO();
   io.emit("user", {

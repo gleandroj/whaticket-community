@@ -7,6 +7,8 @@ const adminPermissions = [
   "ticket-options:deleteTicket",
   "ticket-options:transferWhatsapp",
   "contacts-page:deleteContact",
+  "user-list:edit:admin",
+  "user-list:edit:user",
 ];
 
 const rules = {
@@ -19,7 +21,11 @@ const rules = {
   },
 
   superAdmin: {
-    static: [...adminPermissions, "drawer-admin-items:companies:view"],
+    static: [
+      ...adminPermissions,
+      "drawer-admin-items:companies:view",
+      "user-list:edit:superAdmin",
+    ],
   },
 };
 

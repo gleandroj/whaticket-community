@@ -11,7 +11,7 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
     throw new AppError("ERR_NO_PERMISSION", 403);
   }
 
-  const settings = await ListSettingsService();
+  const settings = await ListSettingsService(req.user.companyId);
 
   return res.status(200).json(settings);
 };

@@ -11,7 +11,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   const user = await User.findOne({ where: { email }, include: ["companies"] });
 
   if (!user) {
-    throw new Error("Usuário não encontrado.");
+    throw new AppError("ERR_INVALID_CREDENTIALS", 401);
   }
 
   const { token, serializedUser, refreshToken } = await AuthUserService({

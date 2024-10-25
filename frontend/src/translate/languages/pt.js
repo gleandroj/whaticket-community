@@ -488,6 +488,9 @@ const messages = {
             "Todos os dados do usuário serão perdidos. Os tickets abertos deste usuário serão movidos para a fila.",
         },
       },
+      userCompanySwitch: {
+        noCompanies: "Nenhuma empresa encontrada.",
+      },
     },
   },
 };

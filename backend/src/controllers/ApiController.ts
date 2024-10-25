@@ -34,14 +34,11 @@ const createContact = async (
   newContact: string,
   companyId: number
 ) => {
-  await CheckIsValidContact(newContact);
+  await CheckIsValidContact(newContact, companyId);
 
-  const validNumber: any = await CheckContactNumber(newContact);
-
-  const profilePicUrl = await GetProfilePicUrl(validNumber);
-
+  const validNumber: any = await CheckContactNumber(newContact, companyId);
+  const profilePicUrl = await GetProfilePicUrl(validNumber, companyId);
   const number = validNumber;
-
   const contactData = {
     name: `${number}`,
     number,
@@ -51,21 +48,16 @@ const createContact = async (
   };
 
   const contact = await CreateOrUpdateContactService(contactData);
+  const whatsapp: Whatsapp | null = await GetDefaultWhatsApp(
+    undefined,
+    companyId
+  );
 
-  let whatsapp: Whatsapp | null;
-
-  if (whatsappId === undefined) {
-    whatsapp = await GetDefaultWhatsApp();
-  } else {
-    whatsapp = await Whatsapp.findByPk(whatsappId);
-
-    if (whatsapp === null) {
-      throw new AppError(`whatsapp #${whatsappId} not found`);
-    }
+  if (whatsapp === null) {
+    throw new AppError(`whatsapp #${whatsappId} not found`);
   }
 
   const createTicket = await FindOrCreateTicketService(contact, whatsapp.id, 1);
-
   const ticket = await ShowTicketService(createTicket.id);
 
   SetTicketMessagesAsRead(ticket);

@@ -27,11 +27,19 @@ interface Response {
   profile: string;
 }
 
-const UpdateUserService = async ({
-  userData,
-  userId
-}: Request): Promise<Response | undefined> => {
+const UpdateUserService = async (
+  { userData, userId }: Request,
+  loggedUserProfile?: string
+): Promise<Response | undefined> => {
   const user = await ShowUserService(userId);
+
+  if (
+    loggedUserProfile &&
+    user.profile === "superAdmin" &&
+    loggedUserProfile !== "superAdmin"
+  ) {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
 
   const schema = Yup.object().shape({
     name: Yup.string().min(2),

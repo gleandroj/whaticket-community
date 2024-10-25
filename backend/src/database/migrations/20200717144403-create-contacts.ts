@@ -1,8 +1,8 @@
-import { QueryInterface, DataTypes } from "sequelize";
+import { DataTypes, QueryInterface } from "sequelize";
 
 module.exports = {
-  up: (queryInterface: QueryInterface) => {
-    return queryInterface.createTable("Contacts", {
+  up: async (queryInterface: QueryInterface) => {
+    await queryInterface.createTable("Contacts", {
       id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -15,8 +15,7 @@ module.exports = {
       },
       number: {
         type: DataTypes.STRING,
-        allowNull: false,
-        unique: true
+        allowNull: false
       },
       profilePicUrl: {
         type: DataTypes.STRING
@@ -35,6 +34,11 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "SET NULL"
       }
+    });
+
+    await queryInterface.addConstraint("Contacts", ["name", "companyId"], {
+      type: "unique",
+      name: "contacts_unique_name_companyId"
     });
   },
 
