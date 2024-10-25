@@ -102,6 +102,7 @@ const verifyMediaMessage = async (
   }
 
   try {
+    // TODO: Change to use S3
     await writeFileAsync(
       join(__dirname, "..", "..", "..", "public", media.filename),
       media.data,
