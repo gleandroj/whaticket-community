@@ -11,7 +11,7 @@ const useAuth = () => {
   const [isAuth, setIsAuth] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState({});
-  const { connectToSocket, disconnect } = useSocketIO();
+  const { connectToSocket } = useSocketIO();
 
   api.interceptors.request.use(
     (config) => {
@@ -53,7 +53,6 @@ const useAuth = () => {
   );
 
   useEffect(() => {
-    initializeInterceptors(setIsAuth);
     const token = localStorage.getItem("token");
     (async () => {
       if (token) {
