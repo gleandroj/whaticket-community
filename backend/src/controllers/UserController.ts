@@ -50,7 +50,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     companiesIds
   });
 
-  const io = getIO();
+  const io = getIO(req.user.companyId);
   io.emit("user", {
     action: "create",
     user
@@ -80,7 +80,7 @@ export const update = async (
 
   const user = await UpdateUserService({ userData, userId }, req.user.profile);
 
-  const io = getIO();
+  const io = getIO(req.user.companyId);
   io.emit("user", {
     action: "update",
     user
@@ -101,7 +101,7 @@ export const remove = async (
 
   await DeleteUserService(userId);
 
-  const io = getIO();
+  const io = getIO(req.user.companyId);
   io.emit("user", {
     action: "delete",
     userId

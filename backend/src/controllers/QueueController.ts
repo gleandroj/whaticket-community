@@ -24,7 +24,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     companyId: req.user.companyId!
   });
 
-  const io = getIO();
+  const io = getIO(req.user.companyId);
   io.emit("queue", {
     action: "update",
     queue
@@ -49,7 +49,7 @@ export const update = async (
 
   const queue = await UpdateQueueService(queueId, req.body);
 
-  const io = getIO();
+  const io = getIO(req.user.companyId);
   io.emit("queue", {
     action: "update",
     queue
@@ -66,7 +66,7 @@ export const remove = async (
 
   await DeleteQueueService(queueId);
 
-  const io = getIO();
+  const io = getIO(req.user.companyId);
   io.emit("queue", {
     action: "delete",
     queueId: +queueId

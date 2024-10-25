@@ -437,8 +437,6 @@ const handleMessage = async (
 const handleMsgAck = async (msg: WbotMessage, ack: MessageAck) => {
   await new Promise(r => setTimeout(r, 500));
 
-  const io = getIO();
-
   try {
     const messageToUpdate = await Message.findByPk(msg.id.id, {
       include: [
@@ -455,7 +453,8 @@ const handleMsgAck = async (msg: WbotMessage, ack: MessageAck) => {
     }
     await messageToUpdate.update({ ack });
 
-    io.to(messageToUpdate.ticketId.toString()).emit("appMessage", {
+    const io = getIO(messageToUpdate.companyId);
+    io.to(`chatBox:${messageToUpdate.ticketId}`).emit("appMessage", {
       action: "update",
       message: messageToUpdate
     });

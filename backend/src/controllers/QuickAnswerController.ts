@@ -42,7 +42,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 
   try {
     await QuickAnswerSchema.validate(newQuickAnswer);
-  } catch (err) {
+  } catch (err: Error | any) {
     throw new AppError(err.message);
   }
 
@@ -51,11 +51,10 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     companyId: req.user.companyId!
   });
 
-  const io = getIO();
+  const io = getIO(req.user.companyId);
   io.emit("quickAnswer", {
     action: "create",
-    quickAnswer,
-  
+    quickAnswer
   });
 
   return res.status(200).json(quickAnswer);
@@ -82,7 +81,7 @@ export const update = async (
 
   try {
     await schema.validate(quickAnswerData);
-  } catch (err) {
+  } catch (err: Error | any) {
     throw new AppError(err.message);
   }
 
@@ -93,7 +92,7 @@ export const update = async (
     quickAnswerId
   });
 
-  const io = getIO();
+  const io = getIO(req.user.companyId);
   io.emit("quickAnswer", {
     action: "update",
     quickAnswer
@@ -110,7 +109,7 @@ export const remove = async (
 
   await DeleteQuickAnswerService(quickAnswerId);
 
-  const io = getIO();
+  const io = getIO(req.user.companyId);
   io.emit("quickAnswer", {
     action: "delete",
     quickAnswerId

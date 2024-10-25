@@ -46,7 +46,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 
   StartWhatsAppSession(whatsapp);
 
-  const io = getIO();
+  const io = getIO(req.user.companyId!);
   io.emit("whatsapp", {
     action: "update",
     whatsapp
@@ -82,7 +82,7 @@ export const update = async (
     whatsappId
   });
 
-  const io = getIO();
+  const io = getIO(req.user.companyId!);
   io.emit("whatsapp", {
     action: "update",
     whatsapp
@@ -107,7 +107,7 @@ export const remove = async (
   await DeleteWhatsAppService(whatsappId);
   removeWbot(+whatsappId);
 
-  const io = getIO();
+  const io = getIO(req.user.companyId!);
   io.emit("whatsapp", {
     action: "delete",
     whatsappId: +whatsappId

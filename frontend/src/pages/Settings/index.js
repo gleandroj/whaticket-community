@@ -52,8 +52,7 @@ const Settings = () => {
 
   useEffect(() => {
     const socket = connectToSocket();
-
-    socket.on("settings", (data) => {
+    const onSettings = (data) => {
       if (data.action === "update") {
         setSettings((prevState) => {
           const aux = [...prevState];
@@ -62,10 +61,12 @@ const Settings = () => {
           return aux;
         });
       }
-    });
+    };
+
+    socket.on("settings", onSettings);
 
     return () => {
-      socket.disconnect();
+      socket.off("settings", onSettings);
     };
   }, []);
 

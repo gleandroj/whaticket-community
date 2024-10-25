@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ReplyMessageProvider } from "../../context/ReplyingMessage/ReplyingMessageContext";
-import { useSocketIO } from "\.\./\.\./context/SocketIO";
+import { useSocketIO } from "../../context/SocketIO";
 import toastError from "../../errors/toastError";
 import api from "../../services/api";
 import ContactDrawer from "../ContactDrawer";
@@ -104,9 +104,10 @@ const Ticket = () => {
   useEffect(() => {
     const socket = connectToSocket();
 
-    socket.on("connect", () => socket.emit("joinChatBox", ticketId));
-
-    socket.on("ticket", (data) => {
+    const onConnect = () => {
+      socket.emit("join:room", ["chatBox", ticketId]);
+    };
+    const onTicket = (data) => {
       if (data.action === "update") {
         setTicket(data.ticket);
       }
@@ -115,9 +116,8 @@ const Ticket = () => {
         toast.success("Ticket deleted sucessfully.");
         history.push("/tickets");
       }
-    });
-
-    socket.on("contact", (data) => {
+    };
+    const onContact = (data) => {
       if (data.action === "update") {
         setContact((prevState) => {
           if (prevState.id === data.contact?.id) {
@@ -126,10 +126,17 @@ const Ticket = () => {
           return prevState;
         });
       }
-    });
+    };
+
+    socket.on("authenticated", onConnect);
+    socket.on("ticket", onTicket);
+    socket.on("contact", onContact);
 
     return () => {
-      socket.disconnect();
+      socket.off("authenticated", onConnect);
+      socket.off("ticket", onTicket);
+      socket.off("contact", onContact);
+      socket.emit("leave:room", ["chatBox", ticketId]);
     };
   }, [ticketId, history]);
 

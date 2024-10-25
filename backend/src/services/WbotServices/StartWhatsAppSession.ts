@@ -10,7 +10,7 @@ export const StartWhatsAppSession = async (
 ): Promise<void> => {
   await whatsapp.update({ status: "OPENING" });
 
-  const io = getIO();
+  const io = getIO(whatsapp.companyId);
   io.emit("whatsappSession", {
     action: "update",
     session: whatsapp

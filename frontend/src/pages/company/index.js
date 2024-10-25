@@ -28,7 +28,7 @@ import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper"
 import TableRowSkeleton from "../../components/TableRowSkeleton";
 import Title from "../../components/Title";
 import { AuthContext } from "../../context/Auth/AuthContext";
-import { useSocketIO } from "\.\./\.\./context/SocketIO";
+import { useSocketIO } from "../../context/SocketIO";
 import toastError from "../../errors/toastError";
 import api from "../../services/api";
 import { i18n } from "../../translate/i18n";
@@ -128,9 +128,7 @@ const Companies = () => {
 
   useEffect(() => {
     const socket = connectToSocket();
-
-    socket.on("company", (data) => {
-      console.log("company", data);
+    const onCompany = (data) => {
       if (data.action === "update" || data.action === "create") {
         dispatch({ type: "UPDATE_COMPANY", payload: data.company });
       }
@@ -138,10 +136,12 @@ const Companies = () => {
       if (data.action === "delete") {
         dispatch({ type: "DELETE_COMPANY", payload: +data.id });
       }
-    });
+    };
+
+    socket.on("company", onCompany);
 
     return () => {
-      socket.disconnect();
+      socket.off("company", onCompany);
     };
   }, []);
 

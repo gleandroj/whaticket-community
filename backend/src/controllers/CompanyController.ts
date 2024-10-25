@@ -31,7 +31,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   const companyData = req.body;
   const company = await CreateCompanyService(companyData);
 
-  const io = getIO();
+  const io = getIO(req.user.companyId);
   io.emit("company", {
     action: "create",
     company
@@ -61,7 +61,7 @@ export const update = async (
 
   const updatedCompany = await UpdateCompanyService(id, companyData);
 
-  const io = getIO();
+  const io = getIO(req.user.companyId);
   io.emit("company", {
     action: "update",
     updatedCompany
@@ -78,7 +78,7 @@ export const remove = async (
 
   await DeleteCompanyService(id);
 
-  const io = getIO();
+  const io = getIO(req.user.companyId);
   io.emit("company", {
     action: "delete",
     id

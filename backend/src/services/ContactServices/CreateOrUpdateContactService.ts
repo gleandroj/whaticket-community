@@ -27,7 +27,7 @@ const CreateOrUpdateContactService = async ({
 }: Request): Promise<Contact> => {
   const number = isGroup ? rawNumber : rawNumber.replace(/[^0-9]/g, "");
 
-  const io = getIO();
+  const io = getIO(companyId);
   let contact: Contact | null;
 
   contact = await Contact.findOne({ where: { number } });

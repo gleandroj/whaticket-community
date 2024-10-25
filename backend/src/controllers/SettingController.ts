@@ -31,7 +31,7 @@ export const update = async (
     value
   });
 
-  const io = getIO();
+  const io = getIO(req.user.companyId);
   io.emit("settings", {
     action: "update",
     setting

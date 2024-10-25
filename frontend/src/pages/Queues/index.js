@@ -111,8 +111,7 @@ const Queues = () => {
 
   useEffect(() => {
     const socket = connectToSocket();
-
-    socket.on("queue", (data) => {
+    const onQueue = (data) => {
       if (data.action === "update" || data.action === "create") {
         dispatch({ type: "UPDATE_QUEUES", payload: data.queue });
       }
@@ -120,10 +119,12 @@ const Queues = () => {
       if (data.action === "delete") {
         dispatch({ type: "DELETE_QUEUE", payload: data.queueId });
       }
-    });
+    };
+
+    socket.on("queue", onQueue);
 
     return () => {
-      socket.disconnect();
+      socket.off("queue", onQueue);
     };
   }, []);
 

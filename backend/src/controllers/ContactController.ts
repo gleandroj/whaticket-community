@@ -105,7 +105,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     companyId: req.user.companyId!
   });
 
-  const io = getIO();
+  const io = getIO(req.user.companyId);
   io.emit("contact", {
     action: "create",
     contact
@@ -148,7 +148,7 @@ export const update = async (
 
   const contact = await UpdateContactService({ contactData, contactId });
 
-  const io = getIO();
+  const io = getIO(req.user.companyId);
   io.emit("contact", {
     action: "update",
     contact
@@ -165,7 +165,7 @@ export const remove = async (
 
   await DeleteContactService(contactId);
 
-  const io = getIO();
+  const io = getIO(req.user.companyId);
   io.emit("contact", {
     action: "delete",
     contactId

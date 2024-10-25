@@ -71,8 +71,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     companyId: req.user.companyId
   });
 
-  const io = getIO();
-  io.to(ticket.status).emit("ticket", {
+  const io = getIO(req.user.companyId);
+  io.to(`tickets:${ticket.status}`).emit("ticket", {
     action: "update",
     ticket
   });
@@ -124,11 +124,14 @@ export const remove = async (
 
   const ticket = await DeleteTicketService(ticketId);
 
-  const io = getIO();
-  io.to(ticket.status).to(ticketId).to("notification").emit("ticket", {
-    action: "delete",
-    ticketId: +ticketId
-  });
+  const io = getIO(req.user.companyId);
+  io.to(`tickets:${ticket.status}`)
+    .to(`chatBox:${ticketId}`)
+    .to("notification")
+    .emit("ticket", {
+      action: "delete",
+      ticketId: +ticketId
+    });
 
   return res.status(200).json({ message: "ticket deleted" });
 };

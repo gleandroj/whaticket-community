@@ -26,7 +26,7 @@ import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper"
 import TableRowSkeleton from "../../components/TableRowSkeleton";
 import Title from "../../components/Title";
 import { AuthContext } from "../../context/Auth/AuthContext";
-import { useSocketIO } from "\.\./\.\./context/SocketIO";
+import { useSocketIO } from "../../context/SocketIO";
 import toastError from "../../errors/toastError";
 import api from "../../services/api";
 import { i18n } from "../../translate/i18n";
@@ -129,7 +129,7 @@ const Contacts = () => {
   useEffect(() => {
     const socket = connectToSocket();
 
-    socket.on("contact", (data) => {
+    const onContact = (data) => {
       if (data.action === "update" || data.action === "create") {
         dispatch({ type: "UPDATE_CONTACTS", payload: data.contact });
       }
@@ -137,10 +137,12 @@ const Contacts = () => {
       if (data.action === "delete") {
         dispatch({ type: "DELETE_CONTACT", payload: +data.contactId });
       }
-    });
+    };
+
+    socket.on("contact", onContact);
 
     return () => {
-      socket.disconnect();
+      socket.off("contact", onContact);
     };
   }, []);
 

@@ -91,6 +91,12 @@ class User extends Model<User> {
   public checkPassword = async (password: string): Promise<boolean> => {
     return compare(password, this.getDataValue("passwordHash"));
   };
+
+  public getActiveCompany = ():
+    | (Company & { UserCompany: UserCompany })
+    | undefined => {
+    return this.companies.find(company => company.UserCompany.isActive);
+  };
 }
 
 export default User;

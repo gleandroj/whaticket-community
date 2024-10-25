@@ -121,9 +121,9 @@ const QuickAnswers = () => {
   }, [searchParam, pageNumber]);
 
   useEffect(() => {
-    const socket = { connectToSocket }();
+    const socket = connectToSocket();
 
-    socket.on("quickAnswer", (data) => {
+    const onQuickAnswer = (data) => {
       if (data.action === "update" || data.action === "create") {
         dispatch({ type: "UPDATE_QUICK_ANSWERS", payload: data.quickAnswer });
       }
@@ -134,10 +134,12 @@ const QuickAnswers = () => {
           payload: +data.quickAnswerId,
         });
       }
-    });
+    };
+
+    socket.on("quickAnswer", onQuickAnswer);
 
     return () => {
-      socket.disconnect();
+      socket.off("quickAnswer", onQuickAnswer);
     };
   }, []);
 

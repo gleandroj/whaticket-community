@@ -3,7 +3,7 @@ import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext, useEffect, useReducer, useState } from "react";
 import { AuthContext } from "../../context/Auth/AuthContext";
-import { useSocketIO } from "\.\./\.\./context/SocketIO";
+import { useSocketIO } from "../../context/SocketIO";
 import useTickets from "../../hooks/useTickets";
 import { i18n } from "../../translate/i18n";
 import TicketListItem from "../TicketListItem";
@@ -190,15 +190,14 @@ const TicketsList = (props) => {
     const notBelongsToUserQueues = (ticket) =>
       ticket.queueId && selectedQueueIds.indexOf(ticket.queueId) === -1;
 
-    socket.on("connect", () => {
+    const onConnect = () => {
       if (status) {
-        socket.emit("joinTickets", status);
+        socket.emit("join:room", ["tickets", status]);
       } else {
-        socket.emit("joinNotification");
+        socket.emit("join:room", ["notification"]);
       }
-    });
-
-    socket.on("ticket", (data) => {
+    };
+    const onTicket = (data) => {
       if (data.action === "updateUnread") {
         dispatch({
           type: "RESET_UNREAD",
@@ -220,28 +219,38 @@ const TicketsList = (props) => {
       if (data.action === "delete") {
         dispatch({ type: "DELETE_TICKET", payload: data.ticketId });
       }
-    });
-
-    socket.on("appMessage", (data) => {
+    };
+    const onAppMessage = (data) => {
       if (data.action === "create" && shouldUpdateTicket(data.ticket)) {
         dispatch({
           type: "UPDATE_TICKET_UNREAD_MESSAGES",
           payload: data.ticket,
         });
       }
-    });
-
-    socket.on("contact", (data) => {
+    };
+    const onContact = (data) => {
       if (data.action === "update") {
         dispatch({
           type: "UPDATE_TICKET_CONTACT",
           payload: data.contact,
         });
       }
-    });
+    };
 
+    socket.on("authenticated", onConnect);
+    socket.on("ticket", onTicket);
+    socket.on("ticketMessage", onAppMessage);
+    socket.on("contact", onContact);
     return () => {
-      socket.disconnect();
+      socket.off("authenticated", onConnect);
+      socket.off("ticket", onTicket);
+      socket.off("ticketMessage", onAppMessage);
+      socket.off("contact", onContact);
+      if (status) {
+        socket.emit("leave:room", ["tickets", status]);
+      } else {
+        socket.emit("leave:room", ["notification"]);
+      }
     };
   }, [status, searchParam, showAll, user, selectedQueueIds]);
 

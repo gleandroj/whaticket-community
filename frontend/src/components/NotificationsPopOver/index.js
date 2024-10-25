@@ -77,10 +77,10 @@ const NotificationsPopOver = () => {
 
   useEffect(() => {
     const socket = connectToSocket();
-
-    socket.on("connect", () => socket.emit("joinNotification"));
-
-    socket.on("ticket", (data) => {
+    const onConnect = () => {
+      socket.emit("join:room", ["notification"]);
+    };
+    const onTicket = (data) => {
       if (data.action === "updateUnread" || data.action === "delete") {
         setNotifications((prevState) => {
           const ticketIndex = prevState.findIndex(
@@ -105,9 +105,8 @@ const NotificationsPopOver = () => {
           return prevState;
         });
       }
-    });
-
-    socket.on("appMessage", (data) => {
+    };
+    const onAppMessage = (data) => {
       if (
         data.action === "create" &&
         !data.message.read &&
@@ -124,20 +123,27 @@ const NotificationsPopOver = () => {
           return [data.ticket, ...prevState];
         });
 
-        const shouldNotNotificate =
+        const shouldNotNotify =
           (data.message.ticketId === ticketIdRef.current &&
             document.visibilityState === "visible") ||
           (data.ticket.userId && data.ticket.userId !== user?.id) ||
           data.ticket.isGroup;
 
-        if (shouldNotNotificate) return;
+        if (shouldNotNotify) return;
 
         handleNotifications(data);
       }
-    });
+    };
+
+    socket.on("authenticated", onConnect);
+    socket.on("ticket", onTicket);
+    socket.on("notificationMessage", onAppMessage);
 
     return () => {
-      socket.disconnect();
+      socket.off("authenticated", onConnect);
+      socket.off("ticket", onTicket);
+      socket.off("notificationMessage", onAppMessage);
+      socket.emit("leave:room", ["notification"]);
     };
   }, [user]);
 

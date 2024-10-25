@@ -14,7 +14,7 @@ const wbotMonitor = async (
   wbot: Session,
   whatsapp: Whatsapp
 ): Promise<void> => {
-  const io = getIO();
+  const io = getIO(whatsapp.companyId);
   const sessionName = whatsapp.name;
 
   try {

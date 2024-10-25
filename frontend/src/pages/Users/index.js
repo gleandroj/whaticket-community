@@ -122,8 +122,7 @@ const Users = () => {
 
   useEffect(() => {
     const socket = connectToSocket();
-
-    socket.on("user", (data) => {
+    const onUser = (data) => {
       if (data.action === "update" || data.action === "create") {
         dispatch({ type: "UPDATE_USERS", payload: data.user });
       }
@@ -131,10 +130,12 @@ const Users = () => {
       if (data.action === "delete") {
         dispatch({ type: "DELETE_USER", payload: +data.userId });
       }
-    });
+    };
+
+    socket.on("user", onUser);
 
     return () => {
-      socket.disconnect();
+      socket.off("user", onUser);
     };
   }, []);
 

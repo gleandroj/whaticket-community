@@ -58,18 +58,18 @@ const UpdateTicketService = async ({
 
   await ticket.reload();
 
-  const io = getIO();
+  const io = getIO(ticket.companyId);
 
   if (ticket.status !== oldStatus || ticket.user?.id !== oldUserId) {
-    io.to(oldStatus).emit("ticket", {
+    io.to(`tickets:${oldStatus}`).emit("ticket", {
       action: "delete",
       ticketId: ticket.id
     });
   }
 
-  io.to(ticket.status)
+  io.to(`tickets:${ticket.status}`)
     .to("notification")
-    .to(ticketId.toString())
+    .to(`chatBox:${ticketId}`)
     .emit("ticket", {
       action: "update",
       ticket

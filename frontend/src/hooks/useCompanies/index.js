@@ -57,21 +57,19 @@ const useCompanies = () => {
 
   useEffect(() => {
     const socket = connectToSocket();
-
-    socket.on("company", (data) => {
+    const onCompany = (data) => {
       if (data.action === "update") {
         dispatch({ type: "UPDATE_COMPANIES", payload: data.company });
       }
-    });
-
-    socket.on("company", (data) => {
       if (data.action === "delete") {
         dispatch({ type: "DELETE_COMPANIES", payload: data.companyId });
       }
-    });
+    };
+
+    socket.on("company", onCompany);
 
     return () => {
-      socket.disconnect();
+      socket.off("company", onCompany);
     };
   }, []);
 

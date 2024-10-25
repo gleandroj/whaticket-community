@@ -70,15 +70,19 @@ const useAuth = () => {
   }, []);
 
   useEffect(() => {
-    const socket = connectToSocket();
-    socket.on("user", (data) => {
-      if (data.action === "update" && data.user.id === user.id) {
-        setUser(data.user);
-      }
-    });
-    return () => {
-      socket.disconnect();
-    };
+    console.log("[useAuth]: Calling useEffect from useAuth", { user });
+    if (user.id) {
+      const socket = connectToSocket();
+      socket.on("user", (data) => {
+        if (data.action === "update" && data.user.id === user.id) {
+          setUser(data.user);
+        }
+      });
+      return () => {
+        console.log("[useAuth]: Calling disconnect from useAuth", { user });
+        socket.disconnect(true);
+      };
+    }
   }, [user]);
 
   const handleLogin = async (userData) => {
