@@ -1,1 +1,1 @@
-web: cd backend && ./node_modules/.bin/sequelize db:migrate && ./node_modules/.bin/sequelize db:seed:all && node ./dist/server.js
+web: cd backend && node ./dist/server.js
